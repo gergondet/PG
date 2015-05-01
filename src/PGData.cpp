@@ -88,7 +88,8 @@ void PGData::forces(const std::vector<ForceContact>& forceContacts)
       ++nrForcePoints_;
     }
     forceDatas_.push_back({mb_.bodyIndexById(fc.bodyId), fc.bodyId,
-                           points, forces, fc.mu});
+                           points, forces, fc.mu, fc.limit});
+//GD                           points, forces, fc.mu});
   }
   xf_.setZero(nrForcePoints_*3);
 }

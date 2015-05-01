@@ -226,11 +226,20 @@ def build_pg(pg):
   forceContact.add_constructor([param('int', 'bodyId'),
                                 param('std::vector<sva::PTransformd>', 'points'),
                                 param('double', 'mu')])
+##GD<
+  forceContact.add_constructor([param('int', 'bodyId'),
+                                param('std::vector<sva::PTransformd>', 'points'),
+                                param('double', 'mu'),
+                                param('double', 'limit')])
+
+##>GD
 
   forceContact.add_instance_attribute('bodyId', 'int')
   forceContact.add_instance_attribute('points', 'std::vector<sva::PTransformd>')
   forceContact.add_instance_attribute('mu', 'double')
-
+##GD<
+  forceContact.add_instance_attribute('limit', 'double')
+##>GD
   # EnvCollision
   envCollision.add_constructor([])
   envCollision.add_constructor([param('int', 'bodyId'),

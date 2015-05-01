@@ -372,13 +372,25 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
     {
       boost::shared_ptr<StaticStabilityConstr> stab(
           new StaticStabilityConstr(&pgdata));
-      problem.addConstraint(stab, {{0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}},
-          {{1e-2}, {1e-2}, {1e-2}, {1e-2}, {1e-2}, {1e-2}});
+          problem.addConstraint(stab, {{0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}, {0., 0.}}, 
+	  {{1e-2}, {1e-2}, {1e-2}, {1e-2}, {1e-2}, {1e-2}});
 
       boost::shared_ptr<PositiveForceConstr> positiveForce(
           new PositiveForceConstr(&pgdata));
       typename PositiveForceConstr::intervals_t limPositive(
             pgdata.nrForcePoints(), {0., std::numeric_limits<double>::infinity()});
+//GD<      
+      size_t currInd = 0;
+      for(size_t i = 0; i < pgdata.forceDatas().size(); ++i){
+	if (pgdata.forceDatas()[i].limit >= 0){
+	  std::cout << "Found " << pgdata.forceDatas()[i].points.size()  << "force points limited" << std::endl; 
+	  for(size_t j = 0; j < pgdata.forceDatas()[i].points.size(); ++j){
+	    limPositive[currInd + j].second = pgdata.forceDatas()[i].limit;
+	  }
+	}
+	currInd += pgdata.forceDatas()[i].points.size();
+      }
+//>GD      
       typename solver_t::problem_t::scales_t scalPositive(pgdata.nrForcePoints(), 1.);
       problem.addConstraint(positiveForce, limPositive, scalPositive);
 

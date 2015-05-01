@@ -182,15 +182,22 @@ struct CylindricalContact
 struct ForceContact
 {
   ForceContact() {}
-  ForceContact(int bId, std::vector<sva::PTransformd> p, double m)
+//GD   ForceContact(int bId, std::vector<sva::PTransformd> p, double m)
+  ForceContact(int bId, std::vector<sva::PTransformd> p, double m, double l=-1)
     : bodyId(bId)
     , points(std::move(p))
     , mu(m)
+//GD<
+    , limit(l)
+//>GD
   {}
 
   int bodyId;
   std::vector<sva::PTransformd> points;
   double mu;
+//GD<
+  double limit;
+//>GD  
 };
 
 

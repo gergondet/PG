@@ -47,6 +47,9 @@ public:
     std::vector<sva::PTransformd> points;
     std::vector<sva::ForceVecd> forces;
     double mu;
+//GD<    
+    double limit;
+//>GD
   };
 
   struct EllipseData
