@@ -155,7 +155,7 @@ void PostureGenerator::param(const std::string& name, int value)
 
 bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 {
-  StdCostFunc cost(pgdatas_, robotConfigs_, configs);
+  boost::shared_ptr<StdCostFunc> cost(new StdCostFunc(pgdatas_, robotConfigs_, configs));
 
   solver_t::problem_t problem(cost);
   problem.startingPoint() = Eigen::VectorXd::Zero(pgdatas_[0].pbSize());

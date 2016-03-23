@@ -40,10 +40,10 @@ public:
   ~FrictionConeConstr();
 
 
-  void impl_compute(result_t& res, const argument_t& x) const;
-  void impl_jacobian(jacobian_t& jac, const argument_t& x) const;
-  void impl_gradient(gradient_t& /* gradient */,
-      const argument_t& /* x */, size_type /* functionId */) const
+  void impl_compute(result_ref res, const_argument_ref x) const;
+  void impl_jacobian(jacobian_ref jac, const_argument_ref x) const;
+  void impl_gradient(gradient_ref /* gradient */,
+      const_argument_ref /* x */, size_type /* functionId */) const
   {
     throw std::runtime_error("NEVER GO HERE");
   }

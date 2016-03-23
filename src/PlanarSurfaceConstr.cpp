@@ -48,7 +48,7 @@ PlanarPositionContactConstr::~PlanarPositionContactConstr()
 { }
 
 
-void PlanarPositionContactConstr::impl_compute(result_t& res, const argument_t& x) const
+void PlanarPositionContactConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -57,10 +57,9 @@ void PlanarPositionContactConstr::impl_compute(result_t& res, const argument_t& 
 }
 
 
-void PlanarPositionContactConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void PlanarPositionContactConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(jac_.dof());
 
   const Eigen::MatrixXd& mat = jac_.jacobian(pgdata_->multibody(), pgdata_->mbc());
   dotCache_.noalias() = targetFrame_.rotation().row(2)*mat.block(3, 0, 3, mat.cols());
@@ -94,7 +93,7 @@ PlanarOrientationContactConstr::~PlanarOrientationContactConstr()
 { }
 
 
-void PlanarOrientationContactConstr::impl_compute(result_t& res, const argument_t& x) const
+void PlanarOrientationContactConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -105,10 +104,9 @@ void PlanarOrientationContactConstr::impl_compute(result_t& res, const argument_
 }
 
 
-void PlanarOrientationContactConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void PlanarOrientationContactConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(jac_.dof()*3);
 
   const Eigen::MatrixXd& mat = jac_.vectorJacobian(pgdata_->multibody(),
       pgdata_->mbc(), surfaceFrame_.rotation().row(Naxis_).transpose());
@@ -165,7 +163,7 @@ PlanarInclusionConstr::~PlanarInclusionConstr()
 { }
 
 
-void PlanarInclusionConstr::impl_compute(result_t& res, const argument_t& x) const
+void PlanarInclusionConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -188,10 +186,9 @@ void PlanarInclusionConstr::impl_compute(result_t& res, const argument_t& x) con
 }
 
 
-void PlanarInclusionConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void PlanarInclusionConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(outputSize()*jac_.dof());
 
   const Eigen::MatrixXd& jacMat = jac_.jacobian(pgdata_->multibody(), pgdata_->mbc());
   int resIndex = 0;

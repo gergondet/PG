@@ -49,7 +49,7 @@ CylindricalPositionConstr::~CylindricalPositionConstr()
 {}
 
 
-void CylindricalPositionConstr::impl_compute(result_t& res, const argument_t& x) const
+void CylindricalPositionConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -62,10 +62,8 @@ void CylindricalPositionConstr::impl_compute(result_t& res, const argument_t& x)
 }
 
 
-void CylindricalPositionConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void CylindricalPositionConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
-  jac.reserve(3*jac_.dof());
-
   pgdata_->x(x);
 
   const Eigen::MatrixXd& jacMat = jac_.jacobian(pgdata_->mb(), pgdata_->mbc());
@@ -101,7 +99,7 @@ CylindricalNVecConstr::~CylindricalNVecConstr()
 {}
 
 
-void CylindricalNVecConstr::impl_compute(result_t& res, const argument_t& x) const
+void CylindricalNVecConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -113,10 +111,8 @@ void CylindricalNVecConstr::impl_compute(result_t& res, const argument_t& x) con
 }
 
 
-void CylindricalNVecConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void CylindricalNVecConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
-  jac.reserve(jac_.dof());
-
   pgdata_->x(x);
 
   sva::PTransformd pos = surfaceFrame_*pgdata_->mbc().bodyPosW[bodyIndex_];

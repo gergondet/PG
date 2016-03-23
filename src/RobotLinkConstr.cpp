@@ -60,7 +60,7 @@ RobotLinkConstr::~RobotLinkConstr()
 { }
 
 
-void RobotLinkConstr::impl_compute(result_t& res, const argument_t& x) const
+void RobotLinkConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata1_->x(x);
   pgdata2_->x(x);
@@ -87,9 +87,8 @@ void RobotLinkConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void RobotLinkConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void RobotLinkConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
-  jac.reserve(nrNonZero_);
   jac.setZero();
 
   pgdata1_->x(x);

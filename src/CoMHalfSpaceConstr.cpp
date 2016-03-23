@@ -53,7 +53,7 @@ CoMHalfSpaceConstr::~CoMHalfSpaceConstr()
 { }
 
 
-void CoMHalfSpaceConstr::impl_compute(result_t& res, const argument_t& x) const
+void CoMHalfSpaceConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -67,10 +67,9 @@ void CoMHalfSpaceConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void CoMHalfSpaceConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void CoMHalfSpaceConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(int(O_.size())*pgdata_->mb().nrDof());
 
   const Eigen::MatrixXd& jacMat = jac_.jacobian(pgdata_->multibody(),
     pgdata_->mbc());

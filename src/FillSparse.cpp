@@ -29,7 +29,7 @@ namespace pg
 template<typename T>
 void fullJacobianSparse_p(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset,
   const T& set)
 {
@@ -56,12 +56,12 @@ void fullJacobianSparse_p(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
 
 void fullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset)
 {
-  auto insert = [](Eigen::SparseMatrix<double, Eigen::RowMajor>& res, int row, int col, double val)
+  auto insert = [](Eigen::SparseMatrix<double, Eigen::ColMajor>& res, int row, int col, double val)
   {
-    res.insert(row, col) = val;
+    res.coeffRef(row, col) = val;
   };
   fullJacobianSparse_p(mb, jac, jacMat, res, offset, insert);
 }
@@ -69,10 +69,10 @@ void fullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
 
 void updateFullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset)
 {
-  auto coeffRef = [](Eigen::SparseMatrix<double, Eigen::RowMajor>& res, int row, int col, double val)
+  auto coeffRef = [](Eigen::SparseMatrix<double, Eigen::ColMajor>& res, int row, int col, double val)
   {
     res.coeffRef(row, col) = val;
   };
@@ -82,10 +82,10 @@ void updateFullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac
 
 void incrementFullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset)
 {
-  auto coeffRef = [](Eigen::SparseMatrix<double, Eigen::RowMajor>& res, int row, int col, double val)
+  auto coeffRef = [](Eigen::SparseMatrix<double, Eigen::ColMajor>& res, int row, int col, double val)
   {
     res.coeffRef(row, col) += val;
   };

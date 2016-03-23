@@ -51,7 +51,7 @@ PositiveForceConstr::~PositiveForceConstr()
 { }
 
 
-void PositiveForceConstr::impl_compute(result_t& res, const argument_t& x) const
+void PositiveForceConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -69,7 +69,7 @@ void PositiveForceConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void PositiveForceConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void PositiveForceConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
   jac.reserve(nrNonZero_);
@@ -91,9 +91,9 @@ void PositiveForceConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) co
                          jac, {index, pgdata_->qParamsBegin()});
 
       int indexCols = pgdata_->forceParamsBegin() + index*3;
-      jac.insert(index, indexCols + 0) = X_0_pi.rotation().row(2)(0);
-      jac.insert(index, indexCols + 1) = X_0_pi.rotation().row(2)(1);
-      jac.insert(index, indexCols + 2) = X_0_pi.rotation().row(2)(2);
+      jac.coeffRef(index, indexCols + 0) = X_0_pi.rotation().row(2)(0);
+      jac.coeffRef(index, indexCols + 1) = X_0_pi.rotation().row(2)(1);
+      jac.coeffRef(index, indexCols + 2) = X_0_pi.rotation().row(2)(2);
 
       ++index;
     }

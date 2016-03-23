@@ -28,7 +28,7 @@ struct IterationCallback
     double obj, constr_viol;
   };
 
-  void operator()(const problem_t& /*problem*/, const solverState_t& state)
+  void operator()(const problem_t& /*problem*/, solverState_t& state)
   {
     Data d;
 

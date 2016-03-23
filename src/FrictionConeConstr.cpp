@@ -51,7 +51,7 @@ FrictionConeConstr::~FrictionConeConstr()
 { }
 
 
-void FrictionConeConstr::impl_compute(result_t& res, const argument_t& x) const
+void FrictionConeConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
 
@@ -71,10 +71,9 @@ void FrictionConeConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void FrictionConeConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void FrictionConeConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(nrNonZero_);
 
   int index = 0;
   for(const PGData::ForceData& fd: pgdata_->forceDatas())
@@ -139,9 +138,9 @@ void FrictionConeConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) con
       fDiff.noalias() += (2.*fBody.x())*X_0_pi.rotation().row(0);
       fDiff.noalias() += (2.*fBody.y())*X_0_pi.rotation().row(1);
       int indexCols = pgdata_->forceParamsBegin() + index*3;
-      jac.insert(index, indexCols + 0) = fDiff(0);
-      jac.insert(index, indexCols + 1) = fDiff(1);
-      jac.insert(index, indexCols + 2) = fDiff(2);
+      jac.coeffRef(index, indexCols + 0) = fDiff(0);
+      jac.coeffRef(index, indexCols + 1) = fDiff(1);
+      jac.coeffRef(index, indexCols + 2) = fDiff(2);
 
       ++index;
     }

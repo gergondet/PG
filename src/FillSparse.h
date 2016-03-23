@@ -37,32 +37,32 @@ typedef std::pair<int, int> jac_offset_t;
 
 void fullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset=jac_offset_t(0, 0));
 
 
 void updateFullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset=jac_offset_t(0, 0));
 
 
 void incrementFullJacobianSparse(const rbd::MultiBody& mb, const rbd::Jacobian& jac,
   const Eigen::Ref<const Eigen::MatrixXd>& jacMat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset=jac_offset_t(0, 0));
 
 
 template <typename Derived>
 void fillSparse(const Eigen::MatrixBase<Derived>& mat,
-  Eigen::SparseMatrix<double, Eigen::RowMajor>& res,
+  Eigen::SparseMatrix<double, Eigen::ColMajor>& res,
   const jac_offset_t& offset=jac_offset_t(0, 0))
 {
   for(int row = 0; row < mat.rows(); ++row)
   {
     for(int col = 0; col < mat.cols(); ++col)
     {
-      res.insert(row + offset.first, col + offset.second) = mat(row, col);
+      res.coeffRef(row + offset.first, col + offset.second) = mat(row, col);
     }
   }
 }

@@ -113,7 +113,7 @@ EnvCollisionConstr::~EnvCollisionConstr()
 }
 
 
-void EnvCollisionConstr::impl_compute(result_t& res, const argument_t& x) const
+void EnvCollisionConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   if(pgdata_->x(x) != xStamp_)
   {
@@ -129,14 +129,12 @@ void EnvCollisionConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void EnvCollisionConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void EnvCollisionConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   if(pgdata_->x(x) != xStamp_)
   {
     updateCollisionData();
   }
-
-  jac.reserve(nrNonZero_);
 
   int i = 0;
   for(CollisionData& cd: cols_)
@@ -184,17 +182,13 @@ SelfCollisionConstr::SelfCollisionConstr(PGData* pgdata, const std::vector<SelfC
   {
     rbd::Jacobian jac1(pgdata_->mb(), sc.body1Id);
     Eigen::MatrixXd jac1Mat(1, jac1.dof());
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jac1MatFull(outputSize(),
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jac1MatFull(outputSize(),
                                                              pgdata_->pbSize());
-
-    jac1MatFull.reserve(jac1.dof());
 
     rbd::Jacobian jac2(pgdata_->mb(), sc.body2Id);
     Eigen::MatrixXd jac2Mat(1, jac2.dof());
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jac2MatFull(outputSize(),
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jac2MatFull(outputSize(),
                                                              pgdata_->pbSize());
-    jac2MatFull.reserve(jac2.dof());
-
     sch::CD_Pair* sch_pair = new sch::CD_Pair(sc.body1Hull, sc.body2Hull);
     sch_pair->setEpsilon(std::numeric_limits<double>::epsilon());
     sch_pair->setRelativePrecision(SCH_REL_PREC);
@@ -220,7 +214,7 @@ SelfCollisionConstr::~SelfCollisionConstr()
 }
 
 
-void SelfCollisionConstr::impl_compute(result_t& res, const argument_t& x) const
+void SelfCollisionConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   if(pgdata_->x(x) != xStamp_)
   {
@@ -236,13 +230,12 @@ void SelfCollisionConstr::impl_compute(result_t& res, const argument_t& x) const
 }
 
 
-void SelfCollisionConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void SelfCollisionConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   if(pgdata_->x(x) != xStamp_)
   {
     updateCollisionData();
   }
-  jac.reserve(nrNonZero_);
 
   int i = 0;
   for(CollisionData& cd: cols_)

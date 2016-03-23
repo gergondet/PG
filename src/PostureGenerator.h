@@ -47,8 +47,7 @@ public:
 
   //define the solver
   typedef roboptim::Solver<
-      roboptim::DifferentiableSparseFunction,
-      constraints_t> solver_t;
+      functionType_t> solver_t;
 
   typedef IterationCallback < solver_t::problem_t,
     solver_t::solverState_t > iteration_callback_t;

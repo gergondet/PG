@@ -54,7 +54,7 @@ StaticStabilityConstr::~StaticStabilityConstr()
 { }
 
 
-void StaticStabilityConstr::impl_compute(result_t& res, const argument_t& x) const
+void StaticStabilityConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   if(xStamp_ != pgdata_->x(x))
   {
@@ -78,14 +78,12 @@ void StaticStabilityConstr::impl_compute(result_t& res, const argument_t& x) con
 }
 
 
-void StaticStabilityConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void StaticStabilityConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   if(xStamp_ != pgdata_->x(x))
   {
     computeCoM();
   }
-
-  jac.reserve(pgdata_->mb().nrDof()*3 + pgdata_->nrForcePoints()*(9*2));
 
   couple_jac_.setZero();
   const Eigen::MatrixXd& comJacMat = comJac_.jacobian(pgdata_->mb(), pgdata_->mbc());

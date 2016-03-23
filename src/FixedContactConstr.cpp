@@ -46,7 +46,7 @@ FixedPositionContactConstr::~FixedPositionContactConstr()
 { }
 
 
-void FixedPositionContactConstr::impl_compute(result_t& res, const argument_t& x) const
+void FixedPositionContactConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
   sva::PTransformd pos = surfaceFrame_*pgdata_->mbc().bodyPosW[bodyIndex_];
@@ -54,10 +54,9 @@ void FixedPositionContactConstr::impl_compute(result_t& res, const argument_t& x
 }
 
 
-void FixedPositionContactConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void FixedPositionContactConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(3*jac_.dof());
   const Eigen::MatrixXd& jacMat = jac_.jacobian(pgdata_->multibody(), pgdata_->mbc());
   fullJacobianSparse(pgdata_->mb(), jac_, jacMat.block(3, 0, 3, jacMat.cols()),
                      jac, {0, pgdata_->qParamsBegin()});
@@ -86,7 +85,7 @@ FixedOrientationContactConstr::~FixedOrientationContactConstr()
 { }
 
 
-void FixedOrientationContactConstr::impl_compute(result_t& res, const argument_t& x) const
+void FixedOrientationContactConstr::impl_compute(result_ref res, const_argument_ref x) const
 {
   pgdata_->x(x);
   sva::PTransformd pos = surfaceFrame_*pgdata_->mbc().bodyPosW[bodyIndex_];
@@ -109,10 +108,9 @@ void FixedOrientationContactConstr::dotDerivative(
 }
 
 
-void FixedOrientationContactConstr::impl_jacobian(jacobian_t& jac, const argument_t& x) const
+void FixedOrientationContactConstr::impl_jacobian(jacobian_ref jac, const_argument_ref x) const
 {
   pgdata_->x(x);
-  jac.reserve(3*jac_.dof());
 
   dotDerivative(surfaceFrame_.rotation().row(0), target_.row(0), dotCacheSum_.row(0));
   dotDerivative(surfaceFrame_.rotation().row(1), target_.row(1), dotCacheSum_.row(1));

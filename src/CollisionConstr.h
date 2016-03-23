@@ -55,10 +55,10 @@ public:
   ~EnvCollisionConstr();
 
 
-  void impl_compute(result_t& res, const argument_t& x) const;
-  void impl_jacobian(jacobian_t& jac, const argument_t& x) const;
-  void impl_gradient(gradient_t& /* gradient */,
-      const argument_t& /* x */, size_type /* functionId */) const
+  void impl_compute(result_ref res, const_argument_ref x) const;
+  void impl_jacobian(jacobian_ref jac, const_argument_ref x) const;
+  void impl_gradient(gradient_ref /* gradient */,
+      const_argument_ref /* x */, size_type /* functionId */) const
   {
     throw std::runtime_error("NEVER GO HERE");
   }
@@ -96,10 +96,10 @@ public:
   SelfCollisionConstr(PGData* pgdata, const std::vector<SelfCollision>& cols);
   ~SelfCollisionConstr();
 
-  void impl_compute(result_t& res, const argument_t& x) const;
-  void impl_jacobian(jacobian_t& jac, const argument_t& x) const;
-  void impl_gradient(gradient_t& /* gradient */,
-      const argument_t& /* x */, size_type /* functionId */) const
+  void impl_compute(result_ref res, const_argument_ref x) const;
+  void impl_jacobian(jacobian_ref jac, const_argument_ref x) const;
+  void impl_gradient(gradient_ref /* gradient */,
+      const_argument_ref /* x */, size_type /* functionId */) const
   {
     throw std::runtime_error("NEVER GO HERE");
   }
@@ -111,12 +111,12 @@ private:
     sva::PTransformd body1T;
     rbd::Jacobian jac1;
     Eigen::MatrixXd jac1Mat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jac1MatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jac1MatFull;
     int body2Index;
     sva::PTransformd body2T;
     rbd::Jacobian jac2;
     Eigen::MatrixXd jac2Mat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jac2MatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jac2MatFull;
     sch::CD_Pair* pair;
     double dist;
     Eigen::Vector3d T_0_p1, T_0_p2;

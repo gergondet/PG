@@ -12,8 +12,8 @@ set(HEADERS PGData.h FillSparse.h
             StdCostFunc.h
             FixedContactConstr.h StaticStabilityConstr.h
             PositiveForceConstr.h FrictionConeConstr.h
-            PlanarSurfaceConstr.h TorqueConstr.h
-            CollisionConstr.h EllipseContactConstr.h
+            PlanarSurfaceConstr.h
+            CollisionConstr.h
             RobotLinkConstr.h CylindricalSurfaceConstr.h
             IterationCallback.h JacobianPatcher.h
             PostureGenerator.h CoMHalfSpaceConstr.h)

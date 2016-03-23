@@ -38,9 +38,9 @@ public:
   StdCostFunc(std::vector<PGData>& pgdatas, const std::vector<RobotConfig>& robotConfigs,
               const std::vector<RunConfig>& runConfigs);
 
-  void impl_compute(result_t& res, const argument_t& x) const;
-  void impl_gradient(gradient_t& gradient,
-      const argument_t& x, size_type /* functionId */) const;
+  void impl_compute(result_ref res, const_argument_ref x) const;
+  void impl_gradient(gradient_ref gradient,
+      const_argument_ref x, size_type /* functionId */) const;
 
 private:
   struct BodyPositionTargetData
@@ -50,7 +50,7 @@ private:
     double scale;
     rbd::Jacobian jac;
     Eigen::MatrixXd jacMat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull;
   };
 
   struct BodyOrientationTargetData
@@ -60,7 +60,7 @@ private:
     double scale;
     rbd::Jacobian jac;
     Eigen::MatrixXd jacMat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull;
   };
 
   struct ForceContactMinimizationData
@@ -79,7 +79,7 @@ private:
     rbd::Jacobian jac;
     Eigen::MatrixXd jacMat;
     Eigen::MatrixXd jacMatTmp;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull;
     std::size_t forcePos;
     std::size_t gradientPos;
     double scale;
@@ -92,7 +92,7 @@ private:
     double target;
     rbd::Jacobian jac;
     Eigen::MatrixXd jacMat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull;
     double scale;
   };
 
@@ -102,7 +102,7 @@ private:
     std::size_t gradientPos;
     rbd::Jacobian jac;
     Eigen::MatrixXd jacMat;
-    Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull;
+    Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull;
     double scale;
   };
 

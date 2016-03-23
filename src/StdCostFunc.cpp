@@ -28,6 +28,11 @@
 
 namespace pg
 {
+  typedef Eigen::SparseVector<double, Eigen::RowMajor> sparse_v_t;
+}
+
+namespace pg
+{
 
 
 StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
@@ -56,8 +61,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
       const BodyPositionTarget& bodyPosTarget = robotConfig.bodyPosTargets[i];
       rbd::Jacobian jac(pgdata.mb(), bodyPosTarget.bodyId);
       Eigen::MatrixXd jacMat(1, jac.dof());
-      Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull(1, pgdata.pbSize());
-      jacMatFull.reserve(jac.dof());
+      Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
       data.bodyPosTargets.push_back({pgdata.mb().bodyIndexById(bodyPosTarget.bodyId),
                                      bodyPosTarget.target,
                                      bodyPosTarget.scale,
@@ -69,8 +73,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
       const BodyOrientationTarget& bodyOriTarget = robotConfig.bodyOriTargets[i];
       rbd::Jacobian jac(pgdata.mb(), bodyOriTarget.bodyId);
       Eigen::MatrixXd jacMat(1, jac.dof());
-      Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull(1, pgdata.pbSize());
-      jacMatFull.reserve(jac.dof());
+      Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
       data.bodyOriTargets.push_back({pgdata.mb().bodyIndexById(bodyOriTarget.bodyId),
                                      bodyOriTarget.target,
                                      bodyOriTarget.scale,
@@ -113,8 +116,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
           rbd::Jacobian jac(pgdata.mb(), tcm.bodyId);
           Eigen::MatrixXd jacMat(1, jac.dof());
           Eigen::MatrixXd jacMatTmp(3, jac.dof());
-          Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull(1, pgdata.pbSize());
-          jacMatFull.reserve(jac.dof());
+          Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
           data.torqueContactsMin.push_back({bodyIndex, forceData.points, std::move(levers),
                                             tcm.axis, jac, jacMat, jacMatTmp, jacMatFull,
                                             j, gradientPos, tcm.scale});
@@ -134,8 +136,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
         {
           rbd::Jacobian jac(pgdata.mb(), robotConfig.normalForceTargets[i].bodyId);
           Eigen::MatrixXd jacMat(1, jac.dof());
-          Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull(1, pgdata.pbSize());
-          jacMatFull.reserve(jac.dof());
+          Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
           data.normalForceTargets.push_back({j, gradientPos,
                                              robotConfig.normalForceTargets[i].target,
                                              jac, jacMat, jacMatFull,
@@ -156,8 +157,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
         {
           rbd::Jacobian jac(pgdata.mb(), robotConfig.tanForceMin[i].bodyId);
           Eigen::MatrixXd jacMat(1, jac.dof());
-          Eigen::SparseMatrix<double, Eigen::RowMajor> jacMatFull(1, pgdata.pbSize());
-          jacMatFull.reserve(jac.dof());
+          Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
           data.tanForceMin.push_back({j, gradientPos,
                                       jac, jacMat, jacMatFull,
                                       robotConfig.tanForceMin[i].scale});
@@ -171,7 +171,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
 }
 
 
-void StdCostFunc::impl_compute(result_t& res, const argument_t& x) const
+void StdCostFunc::impl_compute(result_ref res, const_argument_ref x) const
 {
   res(0) = 0.;
 
@@ -307,10 +307,9 @@ void StdCostFunc::impl_compute(result_t& res, const argument_t& x) const
   }
 }
 
-void StdCostFunc::impl_gradient(gradient_t& gradient,
-    const argument_t& x, size_type /* functionId */) const
+void StdCostFunc::impl_gradient(gradient_ref gradient,
+    const_argument_ref x, size_type /* functionId */) const
 {
-  gradient.reserve(robotDatas_[0].pgdata->pbSize());
   gradient.setZero();
 
   for(RobotData& rd: robotDatas_)
@@ -399,7 +398,7 @@ void StdCostFunc::impl_gradient(gradient_t& gradient,
 
         updateFullJacobianSparse(rd.pgdata->mb(), tcmd.jac, tcmd.jacMat, tcmd.jacMatFull,
                                  {0, rd.pgdata->qParamsBegin()});
-        gradient += tcmd.jacMatFull.transpose();
+        gradient += sparse_v_t(tcmd.jacMatFull.transpose());
 
         Eigen::RowVector3d fDiff;
         fDiff = squareDiff*dotCrossDiff*X_0_b.rotation();
@@ -443,7 +442,7 @@ void StdCostFunc::impl_gradient(gradient_t& gradient,
         updateFullJacobianSparse(rd.pgdata->mb(), nft.jac, nft.jacMat,
                                  nft.jacMatFull,
                                  {0, rd.pgdata->qParamsBegin()});
-        gradient += nft.jacMatFull.transpose();
+        gradient += sparse_v_t(nft.jacMatFull.transpose());
 
         Eigen::RowVector3d fDiff;
         fDiff = coef*X_0_pi.rotation().row(2);
@@ -483,7 +482,7 @@ void StdCostFunc::impl_gradient(gradient_t& gradient,
           updateFullJacobianSparse(rd.pgdata->mb(), tfm.jac, tfm.jacMat,
                                    tfm.jacMatFull,
                                    {0, rd.pgdata->qParamsBegin()});
-          gradient += tfm.jacMatFull.transpose();
+          gradient += sparse_v_t(tfm.jacMatFull.transpose());
 
           Eigen::RowVector3d fDiff;
           fDiff = coef*X_0_pi.rotation().row(row);
@@ -509,7 +508,7 @@ void StdCostFunc::impl_gradient(gradient_t& gradient,
           jacMat.block(3, 0, 3, bp.jac.dof());
       updateFullJacobianSparse(rd.pgdata->mb(), bp.jac, bp.jacMat, bp.jacMatFull,
                                {0, rd.pgdata->qParamsBegin()});
-      gradient += bp.jacMatFull.transpose();
+      gradient += sparse_v_t(bp.jacMatFull.transpose());
     }
 
 
@@ -523,7 +522,7 @@ void StdCostFunc::impl_gradient(gradient_t& gradient,
           jacMat.block(0, 0, 3, bo.jac.dof());
       updateFullJacobianSparse(rd.pgdata->mb(), bo.jac, bo.jacMat, bo.jacMatFull,
                                {0, rd.pgdata->qParamsBegin()});
-      gradient += bo.jacMatFull.transpose();
+      gradient += sparse_v_t(bo.jacMatFull.transpose());
     }
   }
 }
