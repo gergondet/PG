@@ -33,7 +33,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  CylindricalPositionConstr(PGData* pgdata, int bodyId,
+  CylindricalPositionConstr(PGData* pgdata, const std::string & bodyName,
       const sva::PTransformd& targetFrame,
       const sva::PTransformd& surfaceFrame);
   ~CylindricalPositionConstr();
@@ -65,7 +65,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  CylindricalNVecConstr(PGData* pgdata, int bodyId,
+  CylindricalNVecConstr(PGData* pgdata, const std::string & bodyName,
       const sva::PTransformd& targetFrame,
       const sva::PTransformd& surfaceFrame);
   ~CylindricalNVecConstr();

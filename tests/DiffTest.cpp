@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(FixedContactPosTest)
   Eigen::Vector3d target(2., 0., 0.);
   sva::PTransformd surface(sva::PTransformd::Identity());
 
-  pg::FixedPositionContactConstr fpc(&pgdata, 12, target, surface);
+  pg::FixedPositionContactConstr fpc(&pgdata, "b12", target, surface);
 
   for(int i = 0; i < 100; ++i)
   {
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(FixedContactOriTest)
   Matrix3d oriTarget(sva::RotZ(cst::pi<double>()));
   sva::PTransformd surface(sva::RotZ(-cst::pi<double>()/2.), Vector3d::Random());
 
-  pg::FixedOrientationContactConstr foc(&pgdata, 3, oriTarget, surface);
+  pg::FixedOrientationContactConstr foc(&pgdata, "b3", oriTarget, surface);
 
   for(int i = 0; i < 100; ++i)
   {
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(PlanarPositionContactTest)
   sva::PTransformd target(Eigen::Vector3d(0., 1., 0.));
   sva::PTransformd surface(sva::PTransformd::Identity());
 
-  pg::PlanarPositionContactConstr ppp(&pgdata, 12, target, surface);
+  pg::PlanarPositionContactConstr ppp(&pgdata, "b12", target, surface);
 
   for(int i = 0; i < 100; ++i)
   {
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(PlanarOrientationContactTest)
   Eigen::Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
   sva::PTransformd surface(sva::PTransformd::Identity());
 
-  pg::PlanarOrientationContactConstr pop(&pgdata, 12, oriTarget, surface, 1);
+  pg::PlanarOrientationContactConstr pop(&pgdata, "b12", oriTarget, surface, 1);
 
   for(int i = 0; i < 100; ++i)
   {
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(PlanarInclusionTest)
   std::vector<Eigen::Vector2d> targetPoints = {{1., 1.}, {-0., 1.}, {-0., -1.}, {1., -1.}};
   std::vector<Eigen::Vector2d> surfPoints = {{0.1, 0.1}, {-0.1, 0.1}, {-0.1, -0.1}, {0.1, -0.1}};
 
-  pg::PlanarInclusionConstr pi(&pgdata, 12, targetSurface, targetPoints,
+  pg::PlanarInclusionConstr pi(&pgdata, "b12", targetSurface, targetPoints,
                                bodySurface, surfPoints);
 
   for(int i = 0; i < 100; ++i)
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(StaticStabilityTest)
   {
     points[i] = sva::PTransformd(Vector3d(surfPoints[i][0], surfPoints[i][1], 0.))*bodySurface;
   }
-  pgdata.forces({pg::ForceContact{12, points, 0.7}, pg::ForceContact{0, points, 0.7}});
+  pgdata.forces({pg::ForceContact{"b12", points, 0.7}, pg::ForceContact{"b0", points, 0.7}});
 
   pg::StaticStabilityConstr ss(&pgdata);
 
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(PositiveForceTest)
   {
     points[i] = sva::PTransformd(Vector3d(surfPoints[i][0], surfPoints[i][1], 0.))*bodySurface;
   }
-  pgdata.forces({pg::ForceContact{12, points, 0.7}, pg::ForceContact{0, points, 0.7}});
+  pgdata.forces({pg::ForceContact{"b12", points, 0.7}, pg::ForceContact{"b0", points, 0.7}});
 
   pg::PositiveForceConstr ss(&pgdata);
 
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(FrictionConeTest)
   {
     points[i] = sva::PTransformd(Vector3d(surfPoints[i][0], surfPoints[i][1], 0.))*bodySurface;
   }
-  pgdata.forces({pg::ForceContact{12, points, 0.7}, pg::ForceContact{0, points, 0.7}});
+  pgdata.forces({pg::ForceContact{"b12", points, 0.7}, pg::ForceContact{"b0", points, 0.7}});
 
   pg::FrictionConeConstr fc(&pgdata);
 
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(EnvCollisionTest)
   sch::S_Sphere hullBody(0.5);
   sch::S_Sphere hullEnv(0.5);
   hullEnv.setTransformation(pg::tosch(sva::PTransformd::Identity()));
-  pg::EnvCollision ec(12, &hullBody, sva::PTransformd::Identity(),
+  pg::EnvCollision ec("b12", &hullBody, sva::PTransformd::Identity(),
                       &hullEnv, 0.1);
 
   pg::EnvCollisionConstr ecc(&pgdata, {ec});
@@ -382,8 +382,8 @@ BOOST_AUTO_TEST_CASE(SelfCollisionTest)
 
   sch::S_Sphere hullBody1(0.2);
   sch::S_Sphere hullBody2(0.2);
-  pg::SelfCollision sc(12, &hullBody1, sva::PTransformd::Identity(),
-                       6, &hullBody2, sva::PTransformd::Identity(),
+  pg::SelfCollision sc("b12", &hullBody1, sva::PTransformd::Identity(),
+                       "b6", &hullBody2, sva::PTransformd::Identity(),
                        0.1);
 
   pg::SelfCollisionConstr scc(&pgdata, {sc});
@@ -414,11 +414,11 @@ BOOST_AUTO_TEST_CASE(StdCostFunctionTest)
 
   Vector3d target(1.5, 0., 0.);
   Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
-  int id = 12;
+  std::string id = "b12";
   Matrix3d frame(sva::RotX(-cst::pi<double>()/2.));
   Matrix3d frameEnd(sva::RotX(cst::pi<double>()/2.));
   std::vector<pg::ForceContact> forceContacts =
-    {{0 , {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
+    {{"b0" , {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
            sva::PTransformd(frame, Vector3d(-0.01, 0., 0.))}, 1.},
      {id, {sva::PTransformd(frameEnd, Vector3d(0.01, 0., 0.)),
       sva::PTransformd(frameEnd, Vector3d(-0.01, 0., 0.))}, 1.}};
@@ -436,13 +436,13 @@ BOOST_AUTO_TEST_CASE(StdCostFunctionTest)
   robotConfig.torqueScale = 0.;
   robotConfig.forceScale = 2.33;
   robotConfig.ellipseCostScale = 0.;
-  robotConfig.bodyPosTargets = {{12, target, 3.45}};
-  robotConfig.bodyOriTargets = {{12, oriTarget, 5.06}};
-  robotConfig.forceContactsMin = {{12, 1.87}};
-  robotConfig.torqueContactsMin = {{12, Vector3d::Random(),
+  robotConfig.bodyPosTargets = {{"b12", target, 3.45}};
+  robotConfig.bodyOriTargets = {{"b12", oriTarget, 5.06}};
+  robotConfig.forceContactsMin = {{"b12", 1.87}};
+  robotConfig.torqueContactsMin = {{"b12", Vector3d::Random(),
                                     Vector3d::Random().normalized(), 2.92}};
-  robotConfig.normalForceTargets = {{12, 2., 1.33}};
-  robotConfig.tanForceMin = {{12, 1.33}};
+  robotConfig.normalForceTargets = {{"b12", 2., 1.33}};
+  robotConfig.tanForceMin = {{"b12", 1.33}};
 
   pg::StdCostFunc cost(pgdatas, {robotConfig}, {runConfig});
 
@@ -478,7 +478,7 @@ BOOST_AUTO_TEST_CASE(RobotLinkTest)
   sva::PTransformd b2T(Quaterniond(Vector4d::Random().normalized()),
                        Vector3d::Random());
 
-  pg::RobotLinkConstr rlc(&pgdata1, &pgdata2, {{12, b1T, b2T}, {6, b1T, b2T}});
+  pg::RobotLinkConstr rlc(&pgdata1, &pgdata2, {{"b12", b1T, b2T}, {"b6", b1T, b2T}});
 
   for(int i = 0; i < 100; ++i)
   {
@@ -509,7 +509,7 @@ BOOST_AUTO_TEST_CASE(FreeGripperPositionTest)
   sva::PTransformd target(qt, Vector3d::Random());
   sva::PTransformd surface(qs, Vector3d::Random());
 
-  pg::CylindricalPositionConstr fgpc(&pgdata, 12, target, surface);
+  pg::CylindricalPositionConstr fgpc(&pgdata, "b12", target, surface);
 
   for(int i = 0; i < 100; ++i)
   {
@@ -540,7 +540,7 @@ BOOST_AUTO_TEST_CASE(FreeGripperNVecTest)
   sva::PTransformd target(qt, Vector3d::Random());
   sva::PTransformd surface(qs, Vector3d::Random());
 
-  pg::CylindricalNVecConstr fgnvc(&pgdata, 12, target, surface);
+  pg::CylindricalNVecConstr fgnvc(&pgdata, "b12", target, surface);
 
   for(int i = 0; i < 100; ++i)
   {

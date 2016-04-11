@@ -37,7 +37,7 @@ std::tuple<rbd::MultiBody, rbd::MultiBodyConfig> makeXYZ12Arm(bool isPlanar=true
   {
     std::stringstream ss;
     ss << "b" << i;
-    mbg.addBody({rbi, i, ss.str()});
+    mbg.addBody({rbi, ss.str()});
   }
 
   for(int i = 0; i < 12; ++i)
@@ -60,19 +60,22 @@ std::tuple<rbd::MultiBody, rbd::MultiBodyConfig> makeXYZ12Arm(bool isPlanar=true
       type = Joint::RevX;
     }
 
-    mbg.addJoint({type, true, i, ss.str()});
+    mbg.addJoint({type, true, ss.str()});
   }
 
   PTransformd to(Vector3d(0., 0.5, 0.));
   PTransformd from(Vector3d(0., 0., 0.));
 
-  mbg.linkBodies(0, PTransformd::Identity(), 1, from, 0);
+  mbg.linkBodies("b0", PTransformd::Identity(), "b1", from, "j0");
   for(int i = 1; i < 12; ++i)
   {
-    mbg.linkBodies(i, to, i + 1, from, i);
+    std::stringstream from_b_ss; from_b_ss << "b" << i;
+    std::stringstream to_b_ss; to_b_ss << "b" << i+1;
+    std::stringstream j_ss; j_ss << "j" << i;
+    mbg.linkBodies(from_b_ss.str(), to, to_b_ss.str(), from, j_ss.str());
   }
 
-  MultiBody mb = mbg.makeMultiBody(0, isPlanar ? Joint::Planar : Joint::Fixed);
+  MultiBody mb = mbg.makeMultiBody("b0", isPlanar ? Joint::Planar : Joint::Fixed);
 
   MultiBodyConfig mbc(mb);
   mbc.zero(mb);

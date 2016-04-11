@@ -32,15 +32,15 @@ namespace pg
 
 
 CylindricalPositionConstr::CylindricalPositionConstr(
-  PGData* pgdata, int bodyId,
+  PGData* pgdata, const std::string & bodyName,
   const sva::PTransformd& targetFrame,
   const sva::PTransformd& surfaceFrame)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 3, "FreeGripperPositionContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , targetFrame_(targetFrame)
   , surfaceFrame_(surfaceFrame)
-  , jac_(pgdata->mb(), bodyId, surfaceFrame.translation())
+  , jac_(pgdata->mb(), bodyName, surfaceFrame.translation())
   , jacMat_(3, jac_.dof())
 {}
 
@@ -82,15 +82,15 @@ void CylindricalPositionConstr::impl_jacobian(jacobian_ref jac, const_argument_r
 
 
 CylindricalNVecConstr::CylindricalNVecConstr(
-  PGData* pgdata, int bodyId,
+  PGData* pgdata, const std::string & bodyName,
   const sva::PTransformd& targetFrame,
   const sva::PTransformd& surfaceFrame)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 1, "FreeGripperNVecContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->mb().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->mb().bodyIndexByName(bodyName))
   , targetFrame_(targetFrame)
   , surfaceFrame_(surfaceFrame)
-  , jac_(pgdata->mb(), bodyId)
+  , jac_(pgdata->mb(), bodyName)
   , jacMat_(1, jac_.dof())
 {}
 

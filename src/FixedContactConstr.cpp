@@ -30,15 +30,15 @@ namespace pg
  */
 
 
-FixedPositionContactConstr::FixedPositionContactConstr(PGData* pgdata, int bodyId,
+FixedPositionContactConstr::FixedPositionContactConstr(PGData* pgdata, const std::string & bodyName,
     const Eigen::Vector3d& target,
     const sva::PTransformd& surfaceFrame)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 3, "FixedPositionContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , target_(target)
   , surfaceFrame_(surfaceFrame)
-  , jac_(pgdata->multibody(), bodyId, surfaceFrame.translation())
+  , jac_(pgdata->multibody(), bodyName, surfaceFrame.translation())
 {}
 
 
@@ -68,15 +68,15 @@ void FixedPositionContactConstr::impl_jacobian(jacobian_ref jac, const_argument_
  */
 
 
-FixedOrientationContactConstr::FixedOrientationContactConstr(PGData* pgdata, int bodyId,
+FixedOrientationContactConstr::FixedOrientationContactConstr(PGData* pgdata, const std::string & bodyName,
     const Eigen::Matrix3d& target,
     const sva::PTransformd& surfaceFrame)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 3, "FixedOrientationContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , target_(target)
   , surfaceFrame_(surfaceFrame)
-  , jac_(pgdata->multibody(), bodyId)
+  , jac_(pgdata->multibody(), bodyName)
   , dotCacheSum_(3, jac_.dof())
 {}
 

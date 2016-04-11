@@ -31,15 +31,15 @@ namespace pg
 */
 
 
-PlanarPositionContactConstr::PlanarPositionContactConstr(PGData* pgdata, int bodyId,
+PlanarPositionContactConstr::PlanarPositionContactConstr(PGData* pgdata, const std::string & bodyName,
     const sva::PTransformd& targetFrame,
     const sva::PTransformd& surfaceFrame)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 1, "PlanarPositionContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , targetFrame_(targetFrame)
   , surfaceFrame_(surfaceFrame)
-  , jac_(pgdata->multibody(), bodyId, surfaceFrame.translation())
+  , jac_(pgdata->multibody(), bodyName, surfaceFrame.translation())
   , dotCache_(1, jac_.dof())
 {}
 
@@ -72,19 +72,19 @@ void PlanarPositionContactConstr::impl_jacobian(jacobian_ref jac, const_argument
 */
 
 
-PlanarOrientationContactConstr::PlanarOrientationContactConstr(PGData* pgdata, int bodyId,
+PlanarOrientationContactConstr::PlanarOrientationContactConstr(PGData* pgdata, const std::string & bodyName,
     const sva::PTransformd& targetFrame,
     const sva::PTransformd& surfaceFrame,
     int axis)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), 3, "PlanarPositionContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , targetFrame_(targetFrame)
   , surfaceFrame_(surfaceFrame)
   , Naxis_(axis)
   , Taxis_((axis + 1) % 3)
   , Baxis_((axis + 2) % 3)
-  , jac_(pgdata->multibody(), bodyId, surfaceFrame.translation())
+  , jac_(pgdata->multibody(), bodyName, surfaceFrame.translation())
   , dotCache_(3, jac_.dof())
 {}
 
@@ -123,19 +123,19 @@ void PlanarOrientationContactConstr::impl_jacobian(jacobian_ref jac, const_argum
  */
 
 
-PlanarInclusionConstr::PlanarInclusionConstr(PGData* pgdata, int bodyId,
+PlanarInclusionConstr::PlanarInclusionConstr(PGData* pgdata, const std::string & bodyName,
     const sva::PTransformd& targetFrame,
     const std::vector<Eigen::Vector2d>& targetPoints,
     const sva::PTransformd& surfaceFrame,
     const std::vector<Eigen::Vector2d>& surfacePoints)
   : roboptim::DifferentiableSparseFunction(pgdata->pbSize(), int(surfacePoints.size()*targetPoints.size()), "PlanarInclusionContact")
   , pgdata_(pgdata)
-  , bodyIndex_(pgdata->multibody().bodyIndexById(bodyId))
+  , bodyIndex_(pgdata->multibody().bodyIndexByName(bodyName))
   , targetFrame_(targetFrame)
   , targetPoints_(targetPoints)
   , targetVecNorm_(targetPoints.size())
   , surfacePoints_(surfacePoints.size())
-  , jac_(pgdata->multibody(), bodyId)
+  , jac_(pgdata->multibody(), bodyName)
   , transJac_(6, jac_.dof())
   , tJac_(1, jac_.dof())
   , bJac_(1, jac_.dof())

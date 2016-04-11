@@ -155,31 +155,31 @@ def build_pg(pg):
 
   # FixedPositionContact
   fixedPositionContact.add_constructor([])
-  fixedPositionContact.add_constructor([param('int', 'bodyId'),
+  fixedPositionContact.add_constructor([param('const std::string&', 'bodyName'),
                                         param('const Eigen::Vector3d&', 't'),
                                         param('const sva::PTransformd&', 'sf')])
 
-  fixedPositionContact.add_instance_attribute('bodyId', 'int')
+  fixedPositionContact.add_instance_attribute('bodyName', 'std::string')
   fixedPositionContact.add_instance_attribute('target', 'Eigen::Vector3d')
   fixedPositionContact.add_instance_attribute('surfaceFrame', 'sva::PTransformd')
 
   # FixedOrientationContact
   fixedOrientationContact.add_constructor([])
-  fixedOrientationContact.add_constructor([param('int', 'bodyId'),
+  fixedOrientationContact.add_constructor([param('const std::string&', 'bodyName'),
                                            param('const Eigen::Matrix3d&', 't'),
                                            param('const sva::PTransformd&', 'sf')])
 
-  fixedOrientationContact.add_instance_attribute('bodyId', 'int')
+  fixedOrientationContact.add_instance_attribute('bodyName', 'std::string')
   fixedOrientationContact.add_instance_attribute('target', 'Eigen::Matrix3d')
   fixedOrientationContact.add_instance_attribute('surfaceFrame', 'sva::PTransformd')
 
   # PlanarContact
   planarContact.add_constructor([])
-  planarContact.add_constructor([param('int', 'bodyId'),
+  planarContact.add_constructor([param('const std::string&', 'bodyName'),
                                  param('const sva::PTransformd&', 'tf'), param('std::vector<Eigen::Vector2d>', 'tp'),
                                  param('const sva::PTransformd&', 'sf'), param('std::vector<Eigen::Vector2d>', 'sp')])
 
-  planarContact.add_instance_attribute('bodyId', 'int')
+  planarContact.add_instance_attribute('bodyName', 'std::string')
   planarContact.add_instance_attribute('targetFrame', 'sva::PTransformd')
   planarContact.add_instance_attribute('targetPoints', 'std::vector<Eigen::Vector2d>')
   planarContact.add_instance_attribute('surfaceFrame', 'sva::PTransformd')
@@ -187,21 +187,21 @@ def build_pg(pg):
 
   # EllipseContact
   ellipseContact.add_constructor([])
-  ellipseContact.add_constructor([param('int', 'bodyId'),
+  ellipseContact.add_constructor([param('const std::string&', 'bodyName'),
                                   param('double', 'radiusMin1'),
                                   param('double', 'radiusMin2'),
                                   param('const sva::PTransformd&', 'tf'),
                                   param('std::vector<Eigen::Vector2d>', 'tp'),
                                   param('const sva::PTransformd&', 'sf'),
                                   param('std::vector<Eigen::Vector2d>', 'sp')])
-  ellipseContact.add_constructor([param('int', 'bodyId'),
+  ellipseContact.add_constructor([param('const std::string&', 'bodyName'),
                                   param('double', 'radiusMin1'),
                                   param('const sva::PTransformd&', 'tf'),
                                   param('std::vector<Eigen::Vector2d>', 'tp'),
                                   param('const sva::PTransformd&', 'sf'),
                                   param('std::vector<Eigen::Vector2d>', 'sp')])
 
-  ellipseContact.add_instance_attribute('bodyId', 'int')
+  ellipseContact.add_instance_attribute('bodyName', 'std::string')
   ellipseContact.add_instance_attribute('radiusMin1', 'double')
   ellipseContact.add_instance_attribute('radiusMin2', 'double')
   ellipseContact.add_instance_attribute('targetFrame', 'sva::PTransformd')
@@ -211,11 +211,11 @@ def build_pg(pg):
 
   # GripperContact
   gripperContact.add_constructor([])
-  gripperContact.add_constructor([param('int', 'bodyId'),
+  gripperContact.add_constructor([param('const std::string&', 'bodyName'),
                                  param('const sva::PTransformd&', 'tf'), param('std::vector<Eigen::Vector2d>', 'tp'),
                                  param('const sva::PTransformd&', 'sf'), param('std::vector<Eigen::Vector2d>', 'sp')])
 
-  gripperContact.add_instance_attribute('bodyId', 'int')
+  gripperContact.add_instance_attribute('bodyName', 'std::string')
   gripperContact.add_instance_attribute('targetFrame', 'sva::PTransformd')
   gripperContact.add_instance_attribute('targetPoints', 'std::vector<Eigen::Vector2d>')
   gripperContact.add_instance_attribute('surfaceFrame', 'sva::PTransformd')
@@ -223,18 +223,18 @@ def build_pg(pg):
 
   # ForceContact
   forceContact.add_constructor([])
-  forceContact.add_constructor([param('int', 'bodyId'),
+  forceContact.add_constructor([param('const std::string&', 'bodyName'),
                                 param('std::vector<sva::PTransformd>', 'points'),
                                 param('double', 'mu')])
 ##GD<
-  forceContact.add_constructor([param('int', 'bodyId'),
+  forceContact.add_constructor([param('const std::string&', 'bodyName'),
                                 param('std::vector<sva::PTransformd>', 'points'),
                                 param('double', 'mu'),
                                 param('double', 'limit')])
 
 ##>GD
 
-  forceContact.add_instance_attribute('bodyId', 'int')
+  forceContact.add_instance_attribute('bodyName', 'std::string')
   forceContact.add_instance_attribute('points', 'std::vector<sva::PTransformd>')
   forceContact.add_instance_attribute('mu', 'double')
 ##GD<
@@ -242,13 +242,13 @@ def build_pg(pg):
 ##>GD
   # EnvCollision
   envCollision.add_constructor([])
-  envCollision.add_constructor([param('int', 'bodyId'),
+  envCollision.add_constructor([param('const std::string&', 'bodyName'),
                                 param('sch::S_Object*', 'bodyHull', transfer_ownership=False),
                                 param('const sva::PTransformd&', 'bodyT'),
                                 param('sch::S_Object*', 'envHull', transfer_ownership=False),
                                 param('double', 'minDist')])
 
-  envCollision.add_instance_attribute('bodyId', 'int')
+  envCollision.add_instance_attribute('bodyName', 'std::string')
   # pybindgen have some issue with ptr return
   # envCollision.add_instance_attribute('bodyHull', retval('sch::S_Object*',caller_owns_return=False))
   envCollision.add_instance_attribute('bodyT', 'sva::PTransformd')
@@ -257,19 +257,19 @@ def build_pg(pg):
 
   # SelfCollision
   selfCollision.add_constructor([])
-  selfCollision.add_constructor([param('int', 'body1Id'),
+  selfCollision.add_constructor([param('const std::string&', 'body1Name'),
                                  param('sch::S_Object*', 'body1Hull', transfer_ownership=False),
                                  param('const sva::PTransformd&', 'body1T'),
-                                 param('int', 'body2Id'),
+                                 param('const std::string&', 'body2Name'),
                                  param('sch::S_Object*', 'body2Hull', transfer_ownership=False),
                                  param('const sva::PTransformd&', 'body2T'),
                                  param('double', 'minDist')])
 
-  selfCollision.add_instance_attribute('body1Id', 'int')
+  selfCollision.add_instance_attribute('body1Name', 'std::string')
   # pybindgen have some issue with ptr return
   # selfCollision.add_instance_attribute('body2Hull', retval('sch::S_Object*',caller_owns_return=False))
   selfCollision.add_instance_attribute('body1T', 'sva::PTransformd')
-  selfCollision.add_instance_attribute('body2Id', 'int')
+  selfCollision.add_instance_attribute('body2Name', 'std::string')
   # selfCollision.add_instance_attribute('body1Hull', retval('sch::S_Object*',caller_owns_return=False))
   selfCollision.add_instance_attribute('body2T', 'sva::PTransformd')
   selfCollision.add_instance_attribute('minDist', 'double')
@@ -283,60 +283,60 @@ def build_pg(pg):
 
   # BodyPositionTarget
   bodyPosTarget.add_constructor([])
-  bodyPosTarget.add_constructor([param('int', 'bodyId'),
+  bodyPosTarget.add_constructor([param('const std::string&', 'bodyName'),
                                  param('const Eigen::Vector3d&', 'target'),
                                  param('double', 'scale')])
 
-  bodyPosTarget.add_instance_attribute('bodyId', 'int')
+  bodyPosTarget.add_instance_attribute('bodyName', 'std::string')
   bodyPosTarget.add_instance_attribute('target', 'Eigen::Vector3d')
   bodyPosTarget.add_instance_attribute('scale', 'double')
 
   # BodyOrientationTarget
   bodyOriTarget.add_constructor([])
-  bodyOriTarget.add_constructor([param('int', 'bodyId'),
+  bodyOriTarget.add_constructor([param('const std::string&', 'bodyName'),
                                  param('const Eigen::Matrix3d&', 'target'),
                                  param('double', 'scale')])
 
-  bodyOriTarget.add_instance_attribute('bodyId', 'int')
+  bodyOriTarget.add_instance_attribute('bodyName', 'std::string')
   bodyOriTarget.add_instance_attribute('target', 'Eigen::Matrix3d')
   bodyOriTarget.add_instance_attribute('scale', 'double')
 
   # ForceContactMinimization
   forceContactMin.add_constructor([])
-  forceContactMin.add_constructor([param('int', 'bodyId'),
+  forceContactMin.add_constructor([param('const std::string&', 'bodyName'),
                                    param('double', 'scale')])
 
-  forceContactMin.add_instance_attribute('bodyId', 'int')
+  forceContactMin.add_instance_attribute('bodyName', 'std::string')
   forceContactMin.add_instance_attribute('scale', 'double')
 
   # TorqueContactMinimization
   torqueContactMin.add_constructor([])
-  torqueContactMin.add_constructor([param('int', 'bodyId'),
+  torqueContactMin.add_constructor([param('const std::string&', 'bodyName'),
                                     param('const Eigen::Vector3d&', 'origin'),
                                     param('const Eigen::Vector3d&', 'axis'),
                                     param('double', 'scale')])
 
-  torqueContactMin.add_instance_attribute('bodyId', 'int')
+  torqueContactMin.add_instance_attribute('bodyName', 'std::string')
   torqueContactMin.add_instance_attribute('origin', 'Eigen::Vector3d')
   torqueContactMin.add_instance_attribute('axis', 'Eigen::Vector3d')
   torqueContactMin.add_instance_attribute('scale', 'double')
 
   # NormalForceTarget
   normalForceTarget.add_constructor([])
-  normalForceTarget.add_constructor([param('int', 'bodyId'),
+  normalForceTarget.add_constructor([param('const std::string&', 'bodyName'),
                                      param('double', 'target'),
                                      param('double', 'scale')])
 
-  normalForceTarget.add_instance_attribute('bodyId', 'int')
+  normalForceTarget.add_instance_attribute('bodyName', 'std::string')
   normalForceTarget.add_instance_attribute('target', 'double')
   normalForceTarget.add_instance_attribute('scale', 'double')
 
   # TangentialForceMinimization
   tanForceMin.add_constructor([])
-  tanForceMin.add_constructor([param('int', 'bodyId'),
+  tanForceMin.add_constructor([param('const std::string&', 'bodyName'),
                                      param('double', 'scale')])
 
-  tanForceMin.add_instance_attribute('bodyId', 'int')
+  tanForceMin.add_instance_attribute('bodyName', 'std::string')
   tanForceMin.add_instance_attribute('scale', 'double')
 
   # RobotConfig
@@ -380,10 +380,10 @@ def build_pg(pg):
 
   # BodyLink
   bodyLink.add_constructor([])
-  bodyLink.add_constructor([param('int', 'bodyId'),
+  bodyLink.add_constructor([param('const std::string&', 'bodyName'),
                             param('const sva::PTransformd&', 'body1T'),
                             param('const sva::PTransformd&', 'body2T')])
-  bodyLink.add_instance_attribute('bodyId', 'int')
+  bodyLink.add_instance_attribute('bodyName', 'std::string')
   bodyLink.add_instance_attribute('body1T', 'sva::PTransformd')
   bodyLink.add_instance_attribute('body2T', 'sva::PTransformd')
 
@@ -399,12 +399,12 @@ def build_pg(pg):
 
   # CylindricalContact
   cylindricalContact.add_constructor([])
-  cylindricalContact.add_constructor([param('int', 'bodyId'),
+  cylindricalContact.add_constructor([param('const std::string&', 'bodyName'),
                                       param('double', 'targetRadius'),
                                       param('double', 'targetWidth'),
                                       param('sva::PTransformd', 'targetFrame'),
                                       param('sva::PTransformd', 'surfaceFrame')])
-  cylindricalContact.add_instance_attribute('bodyId', 'int')
+  cylindricalContact.add_instance_attribute('bodyName', 'std::string')
   cylindricalContact.add_instance_attribute('targetRadius', 'double')
   cylindricalContact.add_instance_attribute('targetWidth', 'double')
   cylindricalContact.add_instance_attribute('targetFrame', 'sva::PTransformd')

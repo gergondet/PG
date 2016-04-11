@@ -60,19 +60,19 @@ std::tuple<rbd::MultiBody, rbd::MultiBodyConfig> makeZXZArm(bool isFixed=true)
 
   RBInertiad rbi(mass, h, I);
 
-  Body b0(rbi, 0, "b0");
-  Body b1(rbi, 1, "b1");
-  Body b2(rbi, 2, "b2");
-  Body b3(rbi, 3, "b3");
+  Body b0(rbi, "b0");
+  Body b1(rbi, "b1");
+  Body b2(rbi, "b2");
+  Body b3(rbi, "b3");
 
   mbg.addBody(b0);
   mbg.addBody(b1);
   mbg.addBody(b2);
   mbg.addBody(b3);
 
-  Joint j0(Joint::RevZ, true, 0, "j0");
-  Joint j1(Joint::RevX, true, 1, "j1");
-  Joint j2(Joint::RevZ, true, 2, "j2");
+  Joint j0(Joint::RevZ, true, "j0");
+  Joint j1(Joint::RevX, true, "j1");
+  Joint j2(Joint::RevZ, true, "j2");
 
   mbg.addJoint(j0);
   mbg.addJoint(j1);
@@ -87,11 +87,11 @@ std::tuple<rbd::MultiBody, rbd::MultiBodyConfig> makeZXZArm(bool isFixed=true)
   PTransformd from(Vector3d(0., 0., 0.));
 
 
-  mbg.linkBodies(0, PTransformd::Identity(), 1, from, 0);
-  mbg.linkBodies(1, to, 2, from, 1);
-  mbg.linkBodies(2, to, 3, from, 2);
+  mbg.linkBodies("b0", PTransformd::Identity(), "b1", from, "j0");
+  mbg.linkBodies("b1", to, "b2", from, "j1");
+  mbg.linkBodies("b2", to, "b3", from, "j2");
 
-  MultiBody mb = mbg.makeMultiBody(0, isFixed);
+  MultiBody mb = mbg.makeMultiBody("b0", isFixed);
 
   MultiBodyConfig mbc(mb);
   mbc.zero(mb);
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(PGTest)
     pgPb.param("ipopt.print_level", 0);
 
     Vector3d target(0., 0.5, 0.5);
-    rc.fixedPosContacts = {{3, target, sva::PTransformd::Identity()}};
+    rc.fixedPosContacts = {{"b3", target, sva::PTransformd::Identity()}};
 
     pgPb.robotConfigs({rc}, gravity);
     BOOST_REQUIRE(pgPb.run({{mbcInit.q, {}, mbcInit.q}}));
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(PGTest)
     pgPb.param("ipopt.print_level", 0);
 
     Matrix3d target(Quaterniond(AngleAxisd(-cst::pi<double>()/2., Vector3d::UnitX())));
-    rc.fixedOriContacts = {{3, target, sva::PTransformd::Identity()}};
+    rc.fixedOriContacts = {{"b3", target, sva::PTransformd::Identity()}};
 
     pgPb.robotConfigs({rc}, gravity);
     BOOST_REQUIRE(pgPb.run({{mbcInit.q, {}, mbcInit.q}}));
@@ -168,7 +168,7 @@ void toPython(const rbd::MultiBody& mb,
   std::size_t findex = 0;
   for(std::size_t i = 0; i < fc.size(); ++i)
   {
-    int bodyIndex = mb.bodyIndexById(fc[i].bodyId);
+    int bodyIndex = mb.bodyIndexByName(fc[i].bodyName);
     for(std::size_t j = 0; j < fc[i].points.size(); ++j)
     {
       Eigen::Vector3d start = (fc[i].points[j]*mbc.bodyPosW[bodyIndex]).translation();
@@ -211,8 +211,8 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
 
     Vector3d target(2., 0., 0.);
     Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     rc.fixedPosContacts = {{id, target, sva::PTransformd::Identity()}};
     rc.fixedOriContacts = {{id, oriTarget, sva::PTransformd::Identity()}};
 
@@ -234,12 +234,12 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
 
     Vector3d target(2., 0., 0.);
     Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     rc.fixedPosContacts = {{id, target, sva::PTransformd::Identity()}};
     rc.fixedOriContacts = {{id, oriTarget, sva::PTransformd::Identity()}};
     Matrix3d frame(RotX(-cst::pi<double>()/2.));
-    rc.forceContacts = {{0, {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
+    rc.forceContacts = {{"b0", {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
                              sva::PTransformd(frame, Vector3d(-0.01, 0., 0.))}, 1.}};
 
     pgPb.robotConfigs({rc}, gravity);
@@ -260,13 +260,13 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
 
     Vector3d target(1.5, 0., 0.);
     Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     rc.fixedPosContacts = {{id, target, sva::PTransformd::Identity()}};
     rc.fixedOriContacts = {{id, oriTarget, sva::PTransformd::Identity()}};
     Matrix3d frame(RotX(-cst::pi<double>()/2.));
     Matrix3d frameEnd(RotX(cst::pi<double>()/2.));
-    rc.forceContacts = {{0, {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
+    rc.forceContacts = {{"b0", {sva::PTransformd(frame, Vector3d(0.01, 0., 0.)),
                              sva::PTransformd(frame, Vector3d(-0.01, 0., 0.))}, 1.},
                        {id, {sva::PTransformd(frameEnd, Vector3d(0.01, 0., 0.)),
                              sva::PTransformd(frameEnd, Vector3d(-0.01, 0., 0.))}, 1.}};
@@ -288,8 +288,8 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.print_level", 0);
     pgPb.param("ipopt.linear_solver", "mumps");
 
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     Matrix3d frame(RotX(-cst::pi<double>()/2.));
     sva::PTransformd targetSurface(frame, Vector3d(0., 1., 0.));
     sva::PTransformd bodySurface(frame);
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.linear_solver", "mumps");
 
     int id = 12;
-    int index = mb.bodyIndexById(id);
+    int index = mb.bodyIndexByName(id);
     Matrix3d frame(RotX(-cst::pi<double>()/2.));
     sva::PTransformd targetSurface(frame, Vector3d(0., 3., 0.));
     sva::PTransformd bodySurface(frame);
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     int forceIndex = 0;
     for(const pg::ForceContact& f: fcVec)
     {
-      int index = mb.bodyIndexById(f.bodyId);
+      int index = mb.bodyIndexByName(f.bodyName);
       for(const sva::PTransformd& p: f.points)
       {
         mbcWork.force[index] = mbcWork.force[index] +
@@ -426,8 +426,8 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.linear_solver", "mumps");
 
     Vector3d target(0., 0., 0.);
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     rc.bodyPosTargets = {{id, target, 0.1}};
 
     // first we try to go to origin
@@ -478,10 +478,10 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.linear_solver", "mumps");
 
     Vector3d target(0., 0., 0.);
-    int id1 = 12;
-    int index1 = mb.bodyIndexById(id1);
-    int id2 = 6;
-    int index2 = mb.bodyIndexById(id2);
+    std::string id1 = "b12";
+    int index1 = mb.bodyIndexByName(id1);
+    std::string id2 = "b6";
+    int index2 = mb.bodyIndexByName(id2);
     rc.bodyPosTargets = {{id1, target, 0.1}, {id2, target, 0.1}};
 
     // first we try to go to origin
@@ -541,12 +541,12 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
 
     Vector3d target(2., 0., 0.);
     Matrix3d oriTarget(sva::RotZ(-cst::pi<double>()));
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     rc1.fixedPosContacts = {{id, target, sva::PTransformd::Identity()}};
     rc1.fixedOriContacts = {{id, oriTarget, sva::PTransformd::Identity()}};
 
-    pg::RobotLink rl(0, 1, {{12, sva::PTransformd::Identity(),
+    pg::RobotLink rl(0, 1, {{id, sva::PTransformd::Identity(),
                              sva::PTransformd::Identity()}});
     pg::RunConfig rc({mbcInit.q, {}, mbcInit.q});
 
@@ -575,8 +575,8 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.print_level", 0);
     pgPb.param("ipopt.linear_solver", "mumps");
 
-    int id = 12;
-    int index = mb.bodyIndexById(id);
+    std::string id = "b12";
+    int index = mb.bodyIndexByName(id);
     Matrix3d bodyFrame(RotX(cst::pi<double>()/2.)*RotY(cst::pi<double>()/2.));
     sva::PTransformd targetSurface(RotY(cst::pi<double>()/2.), Vector3d(0., 1., 0.));
     sva::PTransformd bodySurface(bodyFrame);
@@ -606,7 +606,7 @@ BOOST_AUTO_TEST_CASE(PGTestZ12)
     pgPb.param("ipopt.print_level", 0);
     pgPb.param("ipopt.linear_solver", "mumps");
 
-    int id = 12;
+    std::string id = "b12";
     Eigen::Vector3d target(100., 0., 0.);
     rc.bodyPosTargets = {{id, target, 1}};
 

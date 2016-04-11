@@ -90,12 +90,12 @@ EnvCollisionConstr::EnvCollisionConstr(PGData* pgdata, const std::vector<EnvColl
   cols_.reserve(cols.size());
   for(const EnvCollision& sc: cols)
   {
-    rbd::Jacobian jac(pgdata_->mb(), sc.bodyId);
+    rbd::Jacobian jac(pgdata_->mb(), sc.bodyName);
     Eigen::MatrixXd jacMat(1, jac.dof());
     sch::CD_Pair* sch_pair = new sch::CD_Pair(sc.bodyHull, sc.envHull);
     sch_pair->setEpsilon(std::numeric_limits<double>::epsilon());
     sch_pair->setRelativePrecision(SCH_REL_PREC);
-    cols_.push_back({pgdata_->multibody().bodyIndexById(sc.bodyId),
+    cols_.push_back({pgdata_->multibody().bodyIndexByName(sc.bodyName),
                      sc.bodyT, sch_pair,
                      jac, jacMat, 0., Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero()});
     nrNonZero_ += jac.dof();
@@ -180,21 +180,21 @@ SelfCollisionConstr::SelfCollisionConstr(PGData* pgdata, const std::vector<SelfC
   cols_.reserve(cols.size());
   for(const SelfCollision& sc: cols)
   {
-    rbd::Jacobian jac1(pgdata_->mb(), sc.body1Id);
+    rbd::Jacobian jac1(pgdata_->mb(), sc.body1Name);
     Eigen::MatrixXd jac1Mat(1, jac1.dof());
     Eigen::SparseMatrix<double, Eigen::ColMajor> jac1MatFull(outputSize(),
                                                              pgdata_->pbSize());
 
-    rbd::Jacobian jac2(pgdata_->mb(), sc.body2Id);
+    rbd::Jacobian jac2(pgdata_->mb(), sc.body2Name);
     Eigen::MatrixXd jac2Mat(1, jac2.dof());
     Eigen::SparseMatrix<double, Eigen::ColMajor> jac2MatFull(outputSize(),
                                                              pgdata_->pbSize());
     sch::CD_Pair* sch_pair = new sch::CD_Pair(sc.body1Hull, sc.body2Hull);
     sch_pair->setEpsilon(std::numeric_limits<double>::epsilon());
     sch_pair->setRelativePrecision(SCH_REL_PREC);
-    cols_.push_back({pgdata_->multibody().bodyIndexById(sc.body1Id),
+    cols_.push_back({pgdata_->multibody().bodyIndexByName(sc.body1Name),
                      sc.body1T, jac1, jac1Mat, jac1MatFull,
-                     pgdata_->multibody().bodyIndexById(sc.body2Id),
+                     pgdata_->multibody().bodyIndexByName(sc.body2Name),
                      sc.body2T, jac2, jac2Mat, jac2MatFull,
                      sch_pair,
                      0., Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero()});

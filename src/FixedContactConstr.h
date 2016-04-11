@@ -32,7 +32,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  FixedPositionContactConstr(PGData* pgdata, int bodyId,
+  FixedPositionContactConstr(PGData* pgdata, const std::string & bodyName,
       const Eigen::Vector3d& target,
       const sva::PTransformd& surfaceFrame);
   ~FixedPositionContactConstr();
@@ -64,7 +64,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  FixedOrientationContactConstr(PGData* pgdata, int bodyId,
+  FixedOrientationContactConstr(PGData* pgdata, const std::string & bodyName,
       const Eigen::Matrix3d& target,
       const sva::PTransformd& surfaceFrame);
   ~FixedOrientationContactConstr();

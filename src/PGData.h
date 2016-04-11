@@ -43,7 +43,7 @@ public:
   struct ForceData
   {
     int bodyIndex;
-    int bodyId;
+    std::string bodyName;
     std::vector<sva::PTransformd> points;
     std::vector<sva::ForceVecd> forces;
     double mu;

@@ -37,7 +37,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  PlanarPositionContactConstr(PGData* pgdata, int bodyId,
+  PlanarPositionContactConstr(PGData* pgdata, const std::string & bodyName,
       const sva::PTransformd& targetFrame,
       const sva::PTransformd& surfaceFrame);
   ~PlanarPositionContactConstr();
@@ -69,7 +69,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  PlanarOrientationContactConstr(PGData* pgdata, int bodyId,
+  PlanarOrientationContactConstr(PGData* pgdata, const std::string & bodyName,
       const sva::PTransformd& targetFrame,
       const sva::PTransformd& surfaceFrame,
       int axis);
@@ -104,7 +104,7 @@ public:
   typedef typename parent_t::argument_t argument_t;
 
 public:
-  PlanarInclusionConstr(PGData* pgdata, int bodyId,
+  PlanarInclusionConstr(PGData* pgdata, const std::string & bodyName,
       const sva::PTransformd& targetFrame,
       const std::vector<Eigen::Vector2d>& targetPoints,
       const sva::PTransformd& surfaceFrame,

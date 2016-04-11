@@ -59,10 +59,10 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
     for(std::size_t i = 0; i < robotConfig.bodyPosTargets.size(); ++i)
     {
       const BodyPositionTarget& bodyPosTarget = robotConfig.bodyPosTargets[i];
-      rbd::Jacobian jac(pgdata.mb(), bodyPosTarget.bodyId);
+      rbd::Jacobian jac(pgdata.mb(), bodyPosTarget.bodyName);
       Eigen::MatrixXd jacMat(1, jac.dof());
       Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
-      data.bodyPosTargets.push_back({pgdata.mb().bodyIndexById(bodyPosTarget.bodyId),
+      data.bodyPosTargets.push_back({pgdata.mb().bodyIndexByName(bodyPosTarget.bodyName),
                                      bodyPosTarget.target,
                                      bodyPosTarget.scale,
                                      jac, jacMat, jacMatFull});
@@ -71,10 +71,10 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
     for(std::size_t i = 0; i < robotConfig.bodyOriTargets.size(); ++i)
     {
       const BodyOrientationTarget& bodyOriTarget = robotConfig.bodyOriTargets[i];
-      rbd::Jacobian jac(pgdata.mb(), bodyOriTarget.bodyId);
+      rbd::Jacobian jac(pgdata.mb(), bodyOriTarget.bodyName);
       Eigen::MatrixXd jacMat(1, jac.dof());
       Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
-      data.bodyOriTargets.push_back({pgdata.mb().bodyIndexById(bodyOriTarget.bodyId),
+      data.bodyOriTargets.push_back({pgdata.mb().bodyIndexByName(bodyOriTarget.bodyName),
                                      bodyOriTarget.target,
                                      bodyOriTarget.scale,
                                      jac, jacMat, jacMatFull});
@@ -87,7 +87,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
       {
         const PGData::ForceData& forceData = pgdata.forceDatas()[j];
         // we don't break since it could be many contact on the same body
-        if(robotConfig.forceContactsMin[i].bodyId == forceData.bodyId)
+        if(robotConfig.forceContactsMin[i].bodyName == forceData.bodyName)
         {
           data.forceContactsMin.push_back({j, gradientPos,
                                            robotConfig.forceContactsMin[i].scale});
@@ -100,12 +100,12 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
     {
       std::size_t gradientPos = pgdata.forceParamsBegin();
       const TorqueContactMinimization& tcm = robotConfig.torqueContactsMin[i];
-      int bodyIndex = pgdata.mb().bodyIndexById(tcm.bodyId);
+      int bodyIndex = pgdata.mb().bodyIndexByName(tcm.bodyName);
       for(std::size_t j = 0; j < pgdata.forceDatas().size(); ++j)
       {
         const PGData::ForceData& forceData = pgdata.forceDatas()[j];
         // we don't break since it could be many contact on the same body
-        if(tcm.bodyId == forceData.bodyId)
+        if(tcm.bodyName == forceData.bodyName)
         {
           std::vector<Eigen::Vector3d> levers;
           levers.reserve(forceData.points.size());
@@ -113,7 +113,7 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
           {
             levers.push_back(p.translation() - tcm.origin);
           }
-          rbd::Jacobian jac(pgdata.mb(), tcm.bodyId);
+          rbd::Jacobian jac(pgdata.mb(), tcm.bodyName);
           Eigen::MatrixXd jacMat(1, jac.dof());
           Eigen::MatrixXd jacMatTmp(3, jac.dof());
           Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
@@ -132,9 +132,9 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
       {
         const PGData::ForceData& forceData = pgdata.forceDatas()[j];
         // we don't break since it could be many contact on the same body
-        if(robotConfig.normalForceTargets[i].bodyId == forceData.bodyId)
+        if(robotConfig.normalForceTargets[i].bodyName == forceData.bodyName)
         {
-          rbd::Jacobian jac(pgdata.mb(), robotConfig.normalForceTargets[i].bodyId);
+          rbd::Jacobian jac(pgdata.mb(), robotConfig.normalForceTargets[i].bodyName);
           Eigen::MatrixXd jacMat(1, jac.dof());
           Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
           data.normalForceTargets.push_back({j, gradientPos,
@@ -153,9 +153,9 @@ StdCostFunc::StdCostFunc(std::vector<PGData>& pgdatas,
       {
         const PGData::ForceData& forceData = pgdata.forceDatas()[j];
         // we don't break since it could be many contact on the same body
-        if(robotConfig.tanForceMin[i].bodyId == forceData.bodyId)
+        if(robotConfig.tanForceMin[i].bodyName == forceData.bodyName)
         {
-          rbd::Jacobian jac(pgdata.mb(), robotConfig.tanForceMin[i].bodyId);
+          rbd::Jacobian jac(pgdata.mb(), robotConfig.tanForceMin[i].bodyName);
           Eigen::MatrixXd jacMat(1, jac.dof());
           Eigen::SparseMatrix<double, Eigen::ColMajor> jacMatFull(1, pgdata.pbSize());
           data.tanForceMin.push_back({j, gradientPos,

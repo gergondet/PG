@@ -44,8 +44,8 @@ RobotLinkConstr::RobotLinkConstr(PGData* pgdata1, PGData* pgdata2,
 {
   for(const BodyLink& link: linkedBodies)
   {
-    rbd::Jacobian jac1(pgdata1_->mb(), link.bodyId, link.body1T.translation());
-    rbd::Jacobian jac2(pgdata2_->mb(), link.bodyId, link.body2T.translation());
+    rbd::Jacobian jac1(pgdata1_->mb(), link.bodyName, link.body1T.translation());
+    rbd::Jacobian jac2(pgdata2_->mb(), link.bodyName, link.body2T.translation());
     Eigen::MatrixXd jacMat1(6, jac1.dof());
     Eigen::MatrixXd jacMat2(6, jac2.dof());
 

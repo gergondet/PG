@@ -43,7 +43,7 @@ StaticStabilityConstr::StaticStabilityConstr(PGData* pgdata)
   {
     for(std::size_t i = 0; i < fd.forces.size(); ++i)
     {
-      jacPoints_[index] = rbd::Jacobian(pgdata_->mb(), fd.bodyId, fd.points[i].translation());
+      jacPoints_[index] = rbd::Jacobian(pgdata_->mb(), fd.bodyName, fd.points[i].translation());
       ++index;
     }
   }

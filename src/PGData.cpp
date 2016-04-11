@@ -87,7 +87,7 @@ void PGData::forces(const std::vector<ForceContact>& forceContacts)
       forces[i] = sva::ForceVecd(Eigen::Vector6d::Zero());
       ++nrForcePoints_;
     }
-    forceDatas_.push_back({mb_.bodyIndexById(fc.bodyId), fc.bodyId,
+    forceDatas_.push_back({mb_.bodyIndexByName(fc.bodyName), fc.bodyName,
                            points, forces, fc.mu, fc.limit});
 //GD                           points, forces, fc.mu});
   }
@@ -101,7 +101,7 @@ void PGData::ellipses(const std::vector<EllipseContact>& ellipseContacts)
   ellipseDatas.reserve(ellipseContacts.size());
   for(const EllipseContact& ec: ellipseContacts)
   {
-    ellipseDatas.push_back({mb_.bodyIndexById(ec.bodyId), 0., 0., 0., 0., 0.});
+    ellipseDatas.push_back({mb_.bodyIndexByName(ec.bodyName), 0., 0., 0., 0., 0.});
   }
 }
 

@@ -37,7 +37,7 @@ PositiveForceConstr::PositiveForceConstr(PGData* pgdata)
   {
     for(std::size_t i = 0; i < fd.forces.size(); ++i)
     {
-      jacPoints_[index] = rbd::Jacobian(pgdata_->mb(), fd.bodyId, fd.points[i].translation());
+      jacPoints_[index] = rbd::Jacobian(pgdata_->mb(), fd.bodyName, fd.points[i].translation());
       jacPointsMatTmp_[index].resize(1, jacPoints_[index].dof());
       // jacobian dof + force vec
       nrNonZero_ += jacPoints_[index].dof() + 3;

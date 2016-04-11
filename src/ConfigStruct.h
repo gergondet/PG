@@ -44,14 +44,14 @@ namespace pg
 struct FixedPositionContact
 {
   FixedPositionContact() {}
-  FixedPositionContact(int bId, const Eigen::Vector3d& t,
+  FixedPositionContact(const std::string & bName, const Eigen::Vector3d& t,
                        const sva::PTransformd& sf)
-    : bodyId(bId)
+    : bodyName(bName)
     , target(t)
     , surfaceFrame(sf)
   {}
 
-  int bodyId;
+  std::string bodyName;
   Eigen::Vector3d target; ///< Position target in world coordinate.
   sva::PTransformd surfaceFrame; ///< Body surface frame in body coordinate.
 };
@@ -60,14 +60,14 @@ struct FixedPositionContact
 struct FixedOrientationContact
 {
   FixedOrientationContact() {}
-  FixedOrientationContact(int bId, const Eigen::Matrix3d& t,
+  FixedOrientationContact(const std::string & bName, const Eigen::Matrix3d& t,
                           const sva::PTransformd& sf)
-    : bodyId(bId)
+    : bodyName(bName)
     , target(t)
     , surfaceFrame(sf)
   {}
 
-  int bodyId;
+  std::string bodyName;
   Eigen::Matrix3d target; ///< Orientation target in world coordinate.
   sva::PTransformd surfaceFrame; ///< Body surface frame in body coordinate.
 };
@@ -76,17 +76,17 @@ struct FixedOrientationContact
 struct PlanarContact
 {
   PlanarContact() {}
-  PlanarContact(int bId,
+  PlanarContact(const std::string & bName,
                 const sva::PTransformd& tf, std::vector<Eigen::Vector2d> tp,
                 const sva::PTransformd& sf, std::vector<Eigen::Vector2d> sp)
-    : bodyId(bId)
+    : bodyName(bName)
     , targetFrame(tf)
     , targetPoints(std::move(tp))
     , surfaceFrame(sf)
     , surfacePoints(std::move(sp))
   {}
 
-  int bodyId;
+  std::string bodyName;
   sva::PTransformd targetFrame; ///< Target frame in world coordinate.
   std::vector<Eigen::Vector2d> targetPoints; ///< Target surface points in surface coordinate.
   sva::PTransformd surfaceFrame; ///< Body surface frame in body coordinate.
@@ -97,10 +97,10 @@ struct PlanarContact
 struct EllipseContact
 {
   EllipseContact() {}
-  EllipseContact(int bId, double rMin,
+  EllipseContact(const std::string & bName, double rMin,
                  const sva::PTransformd& tf, std::vector<Eigen::Vector2d> tp,
                  const sva::PTransformd& sf, std::vector<Eigen::Vector2d> sp)
-    : bodyId(bId)
+    : bodyName(bName)
     , radiusMin1(rMin)
     , radiusMin2(rMin)
     , targetFrame(tf)
@@ -110,10 +110,10 @@ struct EllipseContact
   {
     assert( rMin > 0 && "rMin can't be negative");
   }
-  EllipseContact(int bId, double rMin1, double rMin2,
+  EllipseContact(const std::string & bName, double rMin1, double rMin2,
                  const sva::PTransformd& tf, std::vector<Eigen::Vector2d> tp,
                  const sva::PTransformd& sf, std::vector<Eigen::Vector2d> sp)
-    : bodyId(bId)
+    : bodyName(bName)
     , radiusMin1(rMin1)
     , radiusMin2(rMin2)
     , targetFrame(tf)
@@ -128,7 +128,7 @@ struct EllipseContact
       radiusMin1 = rMin2;
   }
 
-  int bodyId;
+  std::string bodyName;
   double radiusMin1;
   double radiusMin2;
   sva::PTransformd targetFrame; ///< Target frame in world coordinate.
@@ -141,17 +141,17 @@ struct EllipseContact
 struct GripperContact
 {
   GripperContact() {}
-  GripperContact(int bId,
+  GripperContact(const std::string & bName,
                 const sva::PTransformd& tf, std::vector<Eigen::Vector2d> tp,
                 const sva::PTransformd& sf, std::vector<Eigen::Vector2d> sp)
-    : bodyId(bId)
+    : bodyName(bName)
     , targetFrame(tf)
     , targetPoints(std::move(tp))
     , surfaceFrame(sf)
     , surfacePoints(std::move(sp))
   {}
 
-  int bodyId;
+  std::string bodyName;
   sva::PTransformd targetFrame; ///< Target frame in world coordinate.
   std::vector<Eigen::Vector2d> targetPoints; ///< Target surface points in surface coordinate.
   sva::PTransformd surfaceFrame; ///< Body surface frame in body coordinate.
@@ -162,16 +162,16 @@ struct GripperContact
 struct CylindricalContact
 {
   CylindricalContact() {}
-  CylindricalContact(int bId, double tR, double tW,
+  CylindricalContact(const std::string & bName, double tR, double tW,
                      const sva::PTransformd& tf, const sva::PTransformd& sf)
-    : bodyId(bId)
+    : bodyName(bName)
     , targetRadius(tR)
     , targetWidth(tW)
     , targetFrame(tf)
     , surfaceFrame(sf)
   {}
 
-  int bodyId;
+  std::string bodyName;
   double targetRadius;
   double targetWidth;
   sva::PTransformd targetFrame; ///< Target frame in world coordinate.
@@ -182,9 +182,9 @@ struct CylindricalContact
 struct ForceContact
 {
   ForceContact() {}
-//GD   ForceContact(int bId, std::vector<sva::PTransformd> p, double m)
-  ForceContact(int bId, std::vector<sva::PTransformd> p, double m, double l=-1)
-    : bodyId(bId)
+//GD   ForceContact(const std::string & bName, std::vector<sva::PTransformd> p, double m)
+  ForceContact(const std::string & bName, std::vector<sva::PTransformd> p, double m, double l=-1)
+    : bodyName(bName)
     , points(std::move(p))
     , mu(m)
 //GD<
@@ -192,7 +192,7 @@ struct ForceContact
 //>GD
   {}
 
-  int bodyId;
+  std::string bodyName;
   std::vector<sva::PTransformd> points;
   double mu;
 //GD<
@@ -204,17 +204,17 @@ struct ForceContact
 struct EnvCollision
 {
   EnvCollision() {}
-  EnvCollision(int bId, sch::S_Object* bHull, const sva::PTransformd& bT,
+  EnvCollision(const std::string & bName, sch::S_Object* bHull, const sva::PTransformd& bT,
                sch::S_Object* eHull,
                double md)
-    : bodyId(bId)
+    : bodyName(bName)
     , bodyHull(bHull)
     , bodyT(bT)
     , envHull(eHull)
     , minDist(md)
   {}
 
-  int bodyId;
+  std::string bodyName;
   sch::S_Object* bodyHull;
   sva::PTransformd bodyT;
   sch::S_Object* envHull;
@@ -225,22 +225,22 @@ struct EnvCollision
 struct SelfCollision
 {
   SelfCollision() {}
-  SelfCollision(int b1Id, sch::S_Object* b1Hull, const sva::PTransformd& b1T,
-                int b2Id, sch::S_Object* b2Hull, const sva::PTransformd& b2T,
+  SelfCollision(const std::string & b1Name, sch::S_Object* b1Hull, const sva::PTransformd& b1T,
+                const std::string & b2Name, sch::S_Object* b2Hull, const sva::PTransformd& b2T,
                 double md)
-    : body1Id(b1Id)
+    : body1Name(b1Name)
     , body1Hull(b1Hull)
     , body1T(b1T)
-    , body2Id(b2Id)
+    , body2Name(b2Name)
     , body2Hull(b2Hull)
     , body2T(b2T)
     , minDist(md)
   {}
 
-  int body1Id;
+  std::string body1Name;
   sch::S_Object* body1Hull;
   sva::PTransformd body1T;
-  int body2Id;
+  std::string body2Name;
   sch::S_Object* body2Hull;
   sva::PTransformd body2T;
   double minDist;
@@ -264,13 +264,13 @@ struct CoMHalfSpace
 struct BodyPositionTarget
 {
   BodyPositionTarget() {}
-  BodyPositionTarget(int bId, const Eigen::Vector3d& t, double s)
-    : bodyId(bId)
+  BodyPositionTarget(const std::string & bName, const Eigen::Vector3d& t, double s)
+    : bodyName(bName)
     , target(t)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   Eigen::Vector3d target;
   double scale;
 };
@@ -279,13 +279,13 @@ struct BodyPositionTarget
 struct BodyOrientationTarget
 {
   BodyOrientationTarget() {}
-  BodyOrientationTarget(int bId, const Eigen::Matrix3d& t, double s)
-    : bodyId(bId)
+  BodyOrientationTarget(const std::string & bName, const Eigen::Matrix3d& t, double s)
+    : bodyName(bName)
     , target(t)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   Eigen::Matrix3d target;
   double scale;
 };
@@ -294,12 +294,12 @@ struct BodyOrientationTarget
 struct ForceContactMinimization
 {
   ForceContactMinimization() {}
-  ForceContactMinimization(int bId, double s)
-    : bodyId(bId)
+  ForceContactMinimization(const std::string & bName, double s)
+    : bodyName(bName)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   double scale;
 };
 
@@ -307,15 +307,15 @@ struct ForceContactMinimization
 struct TorqueContactMinimization
 {
   TorqueContactMinimization() {}
-  TorqueContactMinimization(int bId, const Eigen::Vector3d& o,
+  TorqueContactMinimization(const std::string & bName, const Eigen::Vector3d& o,
                             const Eigen::Vector3d& a, double s)
-    : bodyId(bId)
+    : bodyName(bName)
     , origin(o)
     , axis(a)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   Eigen::Vector3d origin, axis;
   double scale;
 };
@@ -324,13 +324,13 @@ struct TorqueContactMinimization
 struct NormalForceTarget
 {
   NormalForceTarget() {}
-  NormalForceTarget(int bId, double t, double s)
-    : bodyId(bId)
+  NormalForceTarget(const std::string & bName, double t, double s)
+    : bodyName(bName)
     , target(t)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   double target;
   double scale;
 };
@@ -339,12 +339,12 @@ struct NormalForceTarget
 struct TangentialForceMinimization
 {
   TangentialForceMinimization() {}
-  TangentialForceMinimization(int bId, double s)
-    : bodyId(bId)
+  TangentialForceMinimization(const std::string & bName, double s)
+    : bodyName(bName)
     , scale(s)
   {}
 
-  int bodyId;
+  std::string bodyName;
   double scale;
 };
 
@@ -419,18 +419,18 @@ struct RobotConfig
 struct BodyLink
 {
   BodyLink()
-    : bodyId(-1)
+    : bodyName("Root")
     , body1T(sva::PTransformd::Identity())
     , body2T(sva::PTransformd::Identity())
   {}
 
-  BodyLink(int bId, const sva::PTransformd& b1T, const sva::PTransformd& b2T)
-    : bodyId(bId)
+  BodyLink(const std::string & bName, const sva::PTransformd& b1T, const sva::PTransformd& b2T)
+    : bodyName(bName)
     , body1T(b1T)
     , body2T(b2T)
   {}
 
-  int bodyId;
+  std::string bodyName;
   sva::PTransformd body1T;
   sva::PTransformd body2T;
 };

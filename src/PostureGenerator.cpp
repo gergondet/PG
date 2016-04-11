@@ -219,13 +219,13 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 
     for(const FixedPositionContact& fc: robotConfig.fixedPosContacts)
     {
-      int bodyIndex = pgdata.mb().bodyIndexById(fc.bodyId);
+      int bodyIndex = pgdata.mb().bodyIndexByName(fc.bodyName);
       // if the root body is a fixed contact and the root joint is fixed
       // this constraint is useless
       if(bodyIndex != 0 || pgdata.mb().joint(0).type() != rbd::Joint::Fixed)
       {
         boost::shared_ptr<FixedPositionContactConstr> fcc(
-            new FixedPositionContactConstr(&pgdata, fc.bodyId, fc.target, fc.surfaceFrame));
+            new FixedPositionContactConstr(&pgdata, fc.bodyName, fc.target, fc.surfaceFrame));
         problem.addConstraint(fcc, {{0., 0.}, {0., 0.}, {0., 0.}},
             {{1.}, {1.}, {1.}});
       }
@@ -233,13 +233,13 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 
     for(const FixedOrientationContact& fc: robotConfig.fixedOriContacts)
     {
-      int bodyIndex = pgdata.mb().bodyIndexById(fc.bodyId);
+      int bodyIndex = pgdata.mb().bodyIndexByName(fc.bodyName);
       // if the root body is a fixed contact and the root joint is fixed
       // this constraint is useless
       if(bodyIndex != 0 || pgdata.mb().joint(0).type() != rbd::Joint::Fixed)
       {
         boost::shared_ptr<FixedOrientationContactConstr> fcc(
-            new FixedOrientationContactConstr(&pgdata, fc.bodyId, fc.target, fc.surfaceFrame));
+            new FixedOrientationContactConstr(&pgdata, fc.bodyName, fc.target, fc.surfaceFrame));
         problem.addConstraint(fcc, {{1., 1.}, {1., 1.}, {1., 1.}},
             {{1e+1}, {1e+1}, {1e+1}});
       }
@@ -247,18 +247,18 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 
     for(const PlanarContact& pc: robotConfig.planarContacts)
     {
-      int bodyIndex = pgdata.mb().bodyIndexById(pc.bodyId);
+      int bodyIndex = pgdata.mb().bodyIndexByName(pc.bodyName);
       // if the root body is a planar contact and the root joint is a planar joint
       // we don't need to add planar position and orientation constraint
       if(bodyIndex != 0 || pgdata.mb().joint(0).type() != rbd::Joint::Planar)
       {
         boost::shared_ptr<PlanarPositionContactConstr> ppc(
-            new PlanarPositionContactConstr(&pgdata, pc.bodyId, pc.targetFrame, pc.surfaceFrame));
+            new PlanarPositionContactConstr(&pgdata, pc.bodyName, pc.targetFrame, pc.surfaceFrame));
         problem.addConstraint(ppc, {{0., 0.}}, {{1.}});
 
         // N axis must be aligned between target and surface frame.
         boost::shared_ptr<PlanarOrientationContactConstr> poc(
-            new PlanarOrientationContactConstr(&pgdata, pc.bodyId,
+            new PlanarOrientationContactConstr(&pgdata, pc.bodyName,
                                                pc.targetFrame, pc.surfaceFrame,
                                                2));
         problem.addConstraint(poc, {{0., std::numeric_limits<double>::infinity()},
@@ -270,7 +270,7 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
       if(pc.targetPoints.size() != 0 && pc.surfacePoints.size() != 0)
       {
          boost::shared_ptr<PlanarInclusionConstr> pic(
-            new PlanarInclusionConstr(&pgdata, pc.bodyId,
+            new PlanarInclusionConstr(&pgdata, pc.bodyName,
                                             pc.targetFrame, pc.targetPoints,
                                             pc.surfaceFrame, pc.surfacePoints));
         typename PlanarInclusionConstr::intervals_t limInc(
@@ -285,12 +285,12 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
     {
       int ellipseIndex = 0;
       boost::shared_ptr<PlanarPositionContactConstr> ppc(
-          new PlanarPositionContactConstr(&pgdata, ec.bodyId, ec.targetFrame, ec.surfaceFrame));
+          new PlanarPositionContactConstr(&pgdata, ec.bodyName, ec.targetFrame, ec.surfaceFrame));
       problem.addConstraint(ppc, {{0., 0.}}, {{1.}});
 
       // N axis must be aligned between target and surface frame.
       boost::shared_ptr<PlanarOrientationContactConstr> poc(
-          new PlanarOrientationContactConstr(&pgdata, ec.bodyId,
+          new PlanarOrientationContactConstr(&pgdata, ec.bodyName,
                                                    ec.targetFrame, ec.surfaceFrame,
                                                    2));
       problem.addConstraint(poc, {{1., 1.}}, {{1.}});
@@ -322,17 +322,17 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
     for(const GripperContact& gc: robotConfig.gripperContacts)
     {
       boost::shared_ptr<PlanarPositionContactConstr> ppc(
-          new PlanarPositionContactConstr(&pgdata, gc.bodyId, gc.targetFrame, gc.surfaceFrame));
+          new PlanarPositionContactConstr(&pgdata, gc.bodyName, gc.targetFrame, gc.surfaceFrame));
       problem.addConstraint(ppc, {{0., 0.}}, {{1.}});
 
       boost::shared_ptr<FixedOrientationContactConstr> focc(
-          new FixedOrientationContactConstr(&pgdata, gc.bodyId,
+          new FixedOrientationContactConstr(&pgdata, gc.bodyName,
                                             gc.targetFrame.rotation(), gc.surfaceFrame));
       problem.addConstraint(focc, {{1., 1.}, {1., 1.}, {1., 1.}},
           {{1e+1}, {1e+1}, {1e+1}});
 
       boost::shared_ptr<PlanarInclusionConstr> pic(
-          new PlanarInclusionConstr(&pgdata, gc.bodyId,
+          new PlanarInclusionConstr(&pgdata, gc.bodyName,
                                           gc.targetFrame, gc.targetPoints,
                                           gc.surfaceFrame, gc.surfacePoints));
       typename PlanarInclusionConstr::intervals_t limInc(
@@ -343,7 +343,7 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 
     for(const CylindricalContact& pc: robotConfig.cylindricalContacts)
     {
-      int bodyIndex = pgdata.mb().bodyIndexById(pc.bodyId);
+      int bodyIndex = pgdata.mb().bodyIndexByName(pc.bodyName);
       // if the root body is a cylindrical contact and the root joint is a
       // cylindrical joint we don't need to add cylindrical position and
       // orientation constraint
@@ -351,7 +351,7 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
       {
         sva::PTransformd radiusX(Eigen::Vector3d(0., 0., pc.targetRadius));
         boost::shared_ptr<CylindricalPositionConstr> fgpc(
-            new CylindricalPositionConstr(&pgdata, pc.bodyId, pc.targetFrame,
+            new CylindricalPositionConstr(&pgdata, pc.bodyName, pc.targetFrame,
                                           radiusX*pc.surfaceFrame));
         problem.addConstraint(fgpc, {{-pc.targetWidth/2., pc.targetWidth/2.},
                                      {0., 0.}, {0., 0.}},
@@ -359,7 +359,7 @@ bool PostureGenerator::run(const std::vector<RunConfig>& configs)
 
         // T axis must be aligned between target and surface frame.
         boost::shared_ptr<PlanarOrientationContactConstr> poc(
-            new PlanarOrientationContactConstr(&pgdata, pc.bodyId,
+            new PlanarOrientationContactConstr(&pgdata, pc.bodyName,
                                                pc.targetFrame, pc.surfaceFrame,
                                                0));
         problem.addConstraint(poc, {{0., std::numeric_limits<double>::infinity()},
@@ -717,7 +717,7 @@ PostureGenerator::ellipses(int robot, const Eigen::VectorXd& x) const
   for(const EllipseContact& ec: robotConfig.ellipseContacts)
   {
     pos = pgdata.ellipseParamsBegin() + 5*ellipseIndex;
-    res[ellipseIndex].bodyIndex = ec.bodyId;
+    res[ellipseIndex].bodyIndex = pgdata.mb().bodyIndexByName(ec.bodyName);
     res[ellipseIndex].x = x[pos];
     res[ellipseIndex].y = x[pos + 1];
     res[ellipseIndex].theta = x[pos + 2];
