@@ -8,6 +8,7 @@ INCLUDE(cmake/eigen.cmake)
 SET(PROJECT_NAME PG)
 SET(PROJECT_DESCRIPTION "...")
 SET(PROJECT_URL "https://github.com/jorisv/PG")
+SET(PROJECT_DEBUG_POSTFIX "_d")
 
 # Disable -Werror on Unix for now.
 SET(CXX_DISABLE_WERROR True)
@@ -26,8 +27,8 @@ SEARCH_FOR_BOOST()
 
 ADD_REQUIRED_DEPENDENCY("sch-core")
 ADD_REQUIRED_DEPENDENCY("SpaceVecAlg")
-ADD_REQUIRED_DEPENDENCY("RBDyn")
-ADD_REQUIRED_DEPENDENCY("roboptim-core > 2.0")
+ADD_REQUIRED_DEPENDENCY("RBDyn" "RBDyn_d")
+ADD_REQUIRED_DEPENDENCY("roboptim-core > 2.0" "roboptim-core_d > 2.0")
 
 #########################
 
